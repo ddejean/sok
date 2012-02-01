@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Delete old image
+rm -f disk.img
+rm -f disk/
+
+# Create a new image file of 128 MBytes
+cat << EOF | bximage
+hd
+flat
+128
+disk.img
+EOF
+
+# Create a partition table and a primary partition
+cat << EOF | fdisk -b 512 -C 260 -H 16 -S 63 disk.img
+n
+p
+1
+
+
+a
+1
+w
+EOF
+
+# Create loopback devices
+/sbin/losetup /dev/loop0 disk.img
+/sbin/losetup -o 1048516 /dev/loop1 disk.img
+
+# Create filesystem
+/sbin/mke2fs -j /dev/loop1
+
+# Mount primary partition
+mkdir disk
+mount -t ext2 /dev/loop1 disk/
+
+
+# Copy minimal grub files
+mkdir -p disk/grub
+cp /boot/grub/stage1 disk/grub/
+cp /boot/grub/stage2 disk/grub/
+cp /boot/grub/e2fs_stage1_5
+
+# Create grub configuration file
+cat << EOF > disk/grub/menu.lst
+kernel
+root (hd0,0)   
+kernel /kernel.bin
+EOF
+
+# Install grub bootloaeder on MBR
+cat << EOF | grub
+device (hd0) disk.img
+geometry (hd0) 260 16 63
+root (hd0,0)
+setup (hd0)
+EOF
+
+# Umount the virtual disk
+umount disk/
+rm -rf disk/
+
+# Destroy loop back block devices
+/sbin/losetup -d /dev/loop1
+/sbin/losetup -d /dev/loop0
+
+# Get back image to the user
+chown solarius disk.img
+
