@@ -4,11 +4,12 @@
 #########################################
 
 all: kernel.bin disk
-	echo "### This target will require root access to mont disk image ! ###"
+	@echo "### This target will require root access to mont disk image ! ###"
 	sudo losetup -o 1048576 /dev/loop0 disk.img
 	sudo mount -t ext2 /dev/loop0 disk/
 	sudo cp kernel.bin disk/
 	sudo umount disk/
+	sync
 	sudo losetup -d /dev/loop0
 	rm -f kernel.bin
 
@@ -18,6 +19,12 @@ disk:
 kernel.bin: kernel/kernel.bin
 	cp kernel/kernel.bin .
 
+.PHONY: kernel/kernel.bin
 kernel/kernel.bin:
 	make -C kernel/ kernel.bin
+
+.PHONY: clean
+clean:
+	make -C kernel/ clean
+	rm -f kernel.bin
 

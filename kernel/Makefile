@@ -5,13 +5,16 @@
 
 # Tools
 SHELL := /bin/bash
-CC := gcc -m32
-AS := gcc -m32
-LD := ld -melf_i386
+CC := gcc
+CPP := g++
+AS := gcc
+LD := ld
 
 # Build parameters
-CFLAGS := -Wall -Wextra -Werror -g -gstabs -pipe -std=c99 -nostdinc -fno-stack-protector
-LDFLAGS := 
+FLAGS := -m32 -Wall -Wextra -Werror -g -gstabs -pipe
+CFLAGS := $(FLAGS) -std=c99 -nostdinc -fno-stack-protector
+CXXFLAGS := $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
+LDFLAGS := -melf_i386
 
 # Build sources
 DIRS      := . boot
@@ -33,10 +36,16 @@ OBJS   := $(addprefix $(OUTPUT)/, $(OBJS))
 
 # Build rules
 kernel.bin: kernel.lds $(OBJS)
-	$(LD) -e entry -T $< -o $@ $(filter-out kernel.lds, $^)
+	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out kernel.lds, $^)
 
 $(OUTPUT)/%.o: %.s $(OUTPUT)
-	$(AS) -c $< -o $@
+	$(AS) $(FLAGS) -c $< -o $@
+
+$(OUTPUT)/%.o: %.cpp $(OUTPUT)
+	$(CPP) $(CXXFLAGS) -c $< -o $@
+
+$(OUTPUT)/%.o: %.c $(OUTPUT)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OUTPUT):
 	mkdir -p $(OUTPUT)
