@@ -17,11 +17,15 @@ CXXFLAGS := $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-ex
 LDFLAGS := -melf_i386
 
 # Build sources
-DIRS      := . boot
+DIRS      := . boot lib
 C_FILES   := $(wildcard $(addsuffix /*.c, $(DIRS)))
 CPP_FILES := $(wildcard $(addsuffix /*.cpp, $(DIRS)))
 ASM_FILES := $(wildcard $(addsuffix /*.s, $(DIRS)))
 FILES     := $(C_FILES) $(CPP_FILES) $(ASM_FILES)
+
+# Includes
+INCLUDES_DIR := . lib/
+INCLUDES     := $(addprefix -I, $(INCLUDES_DIR))
 
 # Make automatically search source files
 vpath %.h $(DIRS)
@@ -39,13 +43,13 @@ kernel.bin: kernel.lds $(OBJS)
 	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out kernel.lds, $^)
 
 $(OUTPUT)/%.o: %.s $(OUTPUT)
-	$(AS) $(FLAGS) -c $< -o $@
+	$(AS) $(FLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT)/%.o: %.cpp $(OUTPUT)
-	$(CPP) $(CXXFLAGS) -c $< -o $@
+	$(CPP) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT)/%.o: %.c $(OUTPUT)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT):
 	mkdir -p $(OUTPUT)
