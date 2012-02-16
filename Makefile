@@ -8,8 +8,8 @@ all: kernel.bin disk
 	sudo losetup -o 1048576 /dev/loop0 disk.img
 	sudo mount -t ext2 /dev/loop0 disk/
 	sudo cp kernel.bin disk/
-	sudo umount disk/
 	sync
+	sudo umount disk/
 	sudo losetup -d /dev/loop0
 	rm -f kernel.bin
 

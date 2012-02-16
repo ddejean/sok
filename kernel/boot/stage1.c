@@ -6,19 +6,21 @@
  *            environment for C++ execution.
  */
 
+#include "vga.h"
+#include "putbytes.h"
+#include "stdio.h"
+
 void stage1_main(unsigned int multiboot_magic, void *multiboot_info)
 {
-        char *fb = (char*)0xC00B8000;
-        char *msg = "Welcome on Simple Object Kernel project !";
-
         (void) multiboot_magic;
         (void) multiboot_info;
 
-        while (*msg != '\0') {
-                *fb = *msg;
-                msg++;
-                fb += 2;
-        }
+        /* Prepare the display for this stage1 */
+        putbytes_callback(vga_putbytes);
+        vga_clear();
+
+        /* Display a stage1 message */
+        printf("%s\n", "Welcome on Simple Object Kernel !");
 
         while(1);
 }

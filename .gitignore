@@ -2,3 +2,4 @@ disk.img
 disk
 kernel.bin
 build
+*.swp

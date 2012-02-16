@@ -5,10 +5,10 @@
 
 # Tools
 SHELL := /bin/bash
-CC := gcc
-CPP := g++
-AS := gcc
-LD := ld
+CC    := gcc
+CPP   := g++
+AS    := gcc
+LD    := ld
 
 # Build parameters
 FLAGS := -m32 -Wall -Wextra -Werror -g -gstabs -pipe

@@ -19,9 +19,9 @@
  */
 .p2align 2
 multiboot_header:
-    .long    0x1BADB002                             /* Multiboot magic */
-    .long    0x00010002                             /* Multiboot flags: what we want to know from the loader */
-    .long    -0x1BADB002-0x00010002                 /* Checksum */
+    .long    0x1BADB002                          /* Multiboot magic */
+    .long    0x00010002                          /* Multiboot flags: what we want to know from the loader */
+    .long    -0x1BADB002-0x00010002              /* Checksum */
     .long    multiboot_header - 0xC0000000       /* Multiboot structure adress */
     .long    _start - 0xC0000000                 /* Start of kernel binary in memory */
     .long    _data_end - 0xC0000000              /* End of data to load */
@@ -40,7 +40,7 @@ entry:
   	movl	%eax,       multiboot_magic - 0xC0000000
 	movl	%ebx,       multiboot_info - 0xC0000000
 
-    /*** Load the tricky GDT ***/
+    /* Load the tricky GDT */
     lgdtl   gdt_desc - 0xC0000000
     movw    $0x10,      %ax
     movw    %ax,        %ds
