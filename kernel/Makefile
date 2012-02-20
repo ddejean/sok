@@ -10,11 +10,15 @@ CPP   := g++
 AS    := gcc
 LD    := ld
 
-# Build parameters
-FLAGS := -m32 -Wall -Wextra -Werror -g -gstabs -pipe
-CFLAGS := $(FLAGS) -std=c99 -nostdinc -fno-stack-protector
-CXXFLAGS := $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
-LDFLAGS := -melf_i386
+# Include util functions
+include build/utils.mk
+
+### Build parameters ###
+# Recursively expanded variables to allow flag redefinition by kernel-configs.mk
+FLAGS    = -m32 -Wall -Wextra -Werror -g -gstabs -pipe
+CFLAGS   = $(FLAGS) -std=c99 -nostdinc -fno-stack-protector
+CXXFLAGS = $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
+LDFLAGS  = -melf_i386
 
 # Build sources
 DIRS      := . boot lib
@@ -33,13 +37,23 @@ vpath %.c $(DIRS)
 vpath %.cpp $(DIRS)
 vpath %.s $(DIRS)
 
-# Build products
-OUTPUT := build
-OBJS   := $(strip crt0.o $(filter-out crt0.o,$(notdir $(patsubst %.s,%.o,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(FILES)))))))
-OBJS   := $(addprefix $(OUTPUT)/, $(OBJS))
+# Output configuration
+OUTPUT_BASE := out
 
-# Build rules
-kernel.bin: kernel.lds $(OBJS)
+# Include all kernel configs:
+# defines different targets, flags and output directories
+include build/kernel-configs.mk
+
+### Create list of output files ###
+# We want a list of obj files
+OBJS := $(call targetize, $(FILES))
+# The bootstrap file must be linked first
+OBJS := $(call first-and-unique, crt0.o, $(OBJS))
+# Set the output directory
+OBJS := $(addprefix $(OUTPUT)/, $(OBJS))
+
+### Build rules ###
+$(KERNEL_CONFIGS): kernel.lds $(OBJS) 
 	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out kernel.lds, $^)
 
 $(OUTPUT)/%.o: %.s $(OUTPUT)
@@ -56,6 +70,6 @@ $(OUTPUT):
 
 .PHONY: clean
 clean:
-	rm -f kernel.bin
-	rm -rf build/
+	rm -f $(KERNEL_CONFIGS)
+	rm -rf out/
 
