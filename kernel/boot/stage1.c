@@ -21,10 +21,9 @@ void stage1_main(unsigned int multiboot_magic, void *multiboot_info)
 #ifdef QEMU_DEBUG
         putbytes_callback(qemu_putbytes);
 #else
+        vga_start(0, 0);
         putbytes_callback(vga_putbytes);
 #endif
-        printf("vga_clear");
-        vga_clear();
 
         /* Display a stage1 message */
         printf("%s\n", "Welcome on Simple Object Kernel !");

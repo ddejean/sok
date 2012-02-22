@@ -130,10 +130,44 @@ static inline void vga_putchar(char c)
 	}
 }
 
+/**
+ * Blank the screen with whitespaces and put the cursor
+ * at the beginning of the screen.
+ */
+static void vga_clear(void)
+{
+        int i;
+
+        /* Reset screen parameters */
+        x = 0;
+        y = 0;
+        /* Clear is */
+        for (i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+                vga_putchar(' ');
+        } 
+        screen = (char*)VGA_BUFFER;
+        x = 0;
+        y = 0;
+        /* Reset the cursor */
+        vga_set_cursor(x, y);
+}
+
 /*
  * Public interaface implementation.
  * @see vga.h
  */
+
+void vga_start(uint8_t cursor_x, uint8_t cursor_y)
+{
+        if (x > VGA_WIDTH || y > VGA_HEIGHT || (x == 0 && y == 0)) {
+                vga_clear();
+        } else {
+                x = cursor_x;
+                y = cursor_y;
+        }
+          
+}
+
 void vga_putbytes(const char *str, int len)
 {
         int i;
@@ -141,22 +175,6 @@ void vga_putbytes(const char *str, int len)
                 vga_putchar(*str);
                 str++;
         }
-}
-
-void vga_clear(void)
-{
-        /* Reset screen parameters */
-        x = 0;
-        y = 0;
-        /* Clear is */
-        for (screen = (char*)VGA_BUFFER;
-             screen < (char*)(VGA_BUFFER + VGA_BUFFER_SIZE);
-             ) {
-                *(screen++) = ' ';
-                *(screen++) =  color;
-        } 
-        screen = (char*)VGA_BUFFER;
-        /* Reset the cursor */
         vga_set_cursor(x, y);
 }
 
