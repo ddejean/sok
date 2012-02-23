@@ -19,7 +19,7 @@ qemu: $(KERNEL_DEFAULT)
 qemu-debug: $(KERNEL_QEMU_DEBUG)
 	qemu -kernel kernel/$< -debugcon stdio
 
-# Run qemu with a debug console using embedded multiboot loader
+# Run qemu with a disk image and GRUB legacy as bootloader
 qemu-disk: update-disk
 	qemu -hda disk.img
 
