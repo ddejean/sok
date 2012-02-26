@@ -6,6 +6,7 @@
 
 # Default kernel configuration, no specific debug options
 KERNEL_DEFAULT := kernel-default.bin
+$(KERNEL_DEFAULT): FLAGS += -DVGA_DEBUG
 ifeq ($(MAKECMDGOALS),$(KERNEL_DEFAULT))
 	OUTPUT := $(OUTPUT_BASE)/default
 endif

@@ -45,6 +45,7 @@
  * the rights to redistribute these changes.
  */
 
+#include "stddef.h"
 #include "stdarg.h"
 #include "doprnt.h"
 
@@ -130,7 +131,9 @@ printf(const char *fmt, ...)
 int putchar(int c)
 {
 	char ch = c;
-	putbytes(&ch, 1);
+        if (putbytes != NULL) {
+                putbytes(&ch, 1);
+        }
         return (unsigned char)ch;
 }
 
