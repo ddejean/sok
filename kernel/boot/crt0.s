@@ -20,8 +20,8 @@
 .p2align 2
 multiboot_header:
     .long    0x1BADB002                          /* Multiboot magic */
-    .long    0x00010002                          /* Multiboot flags: what we want to know from the loader */
-    .long    -0x1BADB002-0x00010002              /* Checksum */
+    .long    0x00010003                          /* Multiboot flags: what we want to know from the loader */
+    .long    -0x1BADB002-0x00010003              /* Checksum */
     .long    multiboot_header - 0xC0000000       /* Multiboot structure adress */
     .long    _start - 0xC0000000                 /* Start of kernel binary in memory */
     .long    _data_end - 0xC0000000              /* End of data to load */
@@ -35,10 +35,11 @@ multiboot_header:
 entry:
     /* Ensure interrupts are disabled in bootstrap process */
     cli
-	
+
     /* Save multiboot informations */
-  	movl	%eax,       multiboot_magic - 0xC0000000
-	movl	%ebx,       multiboot_info - 0xC0000000
+    movl    %eax,           multiboot_magic - 0xC0000000
+    addl    $0xC0000000,    %ebx
+    movl    %ebx,           multiboot_info - 0xC0000000
 
     /* Load the tricky GDT */
     lgdtl   gdt_desc - 0xC0000000
@@ -56,17 +57,16 @@ entry:
  */
 virtual_kernel:
     /* Setup the stack */
-	leal	first_stack,        %esp
-	addl	$16384,              %esp
-	xorl	%ebp,               %ebp
+    leal        first_stack,        %esp
+    addl        $16384,             %esp
+    xorl        %ebp,               %ebp
 
-	/* Use it to clear flags (this let interrupt disabled) */
-	pushl	$0
-	popfl
-
+    /* Use it to clear flags (this let interrupt disabled) */
+    pushl        $0
+    popfl
 
     /* Prepare and call stage1 */
-    pushl   $multiboot_info
+    pushl   multiboot_info
     pushl   multiboot_magic
     call    stage1_main
     addl    $8,                 %esp
