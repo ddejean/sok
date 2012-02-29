@@ -10,7 +10,18 @@
 #ifndef _BOOTSTRAP_H_
 #define _BOOTSTRAP_H_
 
+/**
+ * Kernel offset of virtual address space.
+ */
 #define KERNEL_BASE     0xC0000000
+
+/**
+ * Tors limits;
+ */
+extern void (*_ctors_start)(void);
+extern void (*_ctors_end)(void);
+extern void (*_dtors_start)(void);
+extern void (*_dtors_end)(void);
 
 #endif
 

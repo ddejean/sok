@@ -4,18 +4,33 @@
  * stage1.c: C part of the bootstrap. Do all architecture dependent
  *            and non abstractable initializations. Create a suitable
  *            environment for C++ execution.
+ *
+ * Requirements:
+ * - Parse kernel command line arguments if they exist. If not, give empty
+ *   structures to the kernel_main.
+ * - Call C++ constructors before kernel_main call, and C++ destructors
+ *   after kernel_main returns.
+ * - Configure the primary display library using putbytes callback, even
+ *   if it consists in a NULL pointer (no display). A valid display is
+ *   adviced for debug.
  */
 
-#include "vga.h"
-#include "qemu.h"
-#include "putbytes.h"
 #include "stdio.h"
 #include "stddef.h"
 #include "string.h"
 #include "multiboot.h"
+#include "bootstrap.h"
+#include "putbytes.h"
+#include "kernel.h"
+
+#ifdef QEMU_DEBUG
+#include "qemu.h"
+#elif VGA_DEBUG
+#include "vga.h"
+#endif
 
 /**
- * Abstract displayt initialization, depending on compilation parameters.
+ * Abstract display initialization, depending on compilation parameters.
  */
 static void stage1_setup_display(void)
 {
@@ -71,9 +86,21 @@ char **stage1_argumentize(const char *mb_args, int *argc)
                                 break;
                 }
         }
- 
+
         *argc = count;
         return argv;
+}
+
+/**
+ * Function to call a list of functions (CTORS/DTORS).
+ */
+static void stage1_call_tors(void (*tors_begin)(void), void (*tors_end)(void))
+{
+        void (*tor)(void);
+
+        for (tor = tors_begin; tor < tors_end; tor++) {
+                tor();
+        }
 }
 
 /**
@@ -90,6 +117,10 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
         /* Prepare a simple debug display */
         stage1_setup_display();
 
+        /* Introduction messages */
+        printf("%s\n", "Simple Object Kernel");
+        printf("%s\n", "Running stage 1 ...");
+
         /* Check we have been loaded by a compliant mutliboot loader */
         if (multiboot_check(multiboot_magic)) {
                 multiboot_save(multiboot_info);
@@ -97,9 +128,6 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
                 printf("%s\n", "Boot failure: Simple Object Kernel only support multiboot compliant loaders.");
                 return;
         }
-
-        /* Introduction messages */
-        printf("%s\n", "Simple Object Kernel is booting ...");
 
         bootloader_name = multiboot_bootloader_name();
         if (bootloader_name != NULL) {
@@ -119,11 +147,13 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
         }
 
         /* Call constructors list */
+        stage1_call_tors(_ctors_start, _ctors_end);
 
         /* Call C++ kernel */
+        kernel_main(argc, argv);
 
         /* Call destructors */
+        stage1_call_tors(_dtors_start, _dtors_end);
 
-        while(1);
 }
 

@@ -6,6 +6,13 @@
  * 
  * This kernel entry point expect to be loaded by a multiboot compliant
  * bootloader like GRUB.
+ *
+ * Requirements:
+ * - Set up a virtual address space to allow the kernel to use 3 GB based
+ *   virtual addresses
+ * - Set up a primary stack
+ * - The kernel must block in a fashion and power efficient way if the call
+ *   to stage1_main returns.
  */
 
 .text
