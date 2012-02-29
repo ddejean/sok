@@ -53,8 +53,8 @@ OBJS := $(call first-and-unique, crt0.o, $(OBJS))
 OBJS := $(addprefix $(OUTPUT)/, $(OBJS))
 
 ### Build rules ###
-$(KERNEL_CONFIGS): kernel.lds $(OBJS) 
-	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out kernel.lds, $^)
+$(KERNEL_CONFIGS): boot/kernel.lds $(OBJS) 
+	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out boot/kernel.lds, $^)
 
 $(OUTPUT)/%.o: %.s $(OUTPUT)
 	$(AS) $(FLAGS) $(INCLUDES) -c $< -o $@
