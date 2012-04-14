@@ -27,12 +27,10 @@ qemu-disk: update-disk
 .PHONY: update-disk
 update-disk: disk $(KERNEL_DEFAULT)
 	@echo "### This target will require root access to mont disk image ! ###"
-	sudo losetup -o 1048576 /dev/loop0 disk.img
-	sudo mount -t ext2 /dev/loop0 disk/
+	sudo mount -t ext2 -o loop,offset=1048576 disk.img disk/
 	sudo cp kernel/$(KERNEL_DEFAULT) disk/
 	sync
 	sudo umount disk/
-	sudo losetup -d /dev/loop0
 
 disk:
 	mkdir disk/
