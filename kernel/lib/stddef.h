@@ -22,7 +22,7 @@
 /**
  * Standard size type.
  */
-typedef unsigned long size_t;
+typedef unsigned int size_t;
 
 /**
  * Offset of a field in it's structure.

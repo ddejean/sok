@@ -21,7 +21,7 @@ CXXFLAGS = $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exc
 LDFLAGS  = -melf_i386
 
 # Build sources
-DIRS      := . boot lib
+DIRS      := . boot lib mem
 C_FILES   := $(wildcard $(addsuffix /*.c, $(DIRS)))
 CPP_FILES := $(wildcard $(addsuffix /*.cpp, $(DIRS)))
 ASM_FILES := $(wildcard $(addsuffix /*.s, $(DIRS)))

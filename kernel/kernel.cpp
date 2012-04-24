@@ -13,6 +13,7 @@ extern "C" {
 
 #include "stdio.h"
 #include "kernel.h"
+#include "mem/BootstrapAllocator.h"
 
 void kernel_main(int argc, char **argv)
 {
@@ -20,6 +21,10 @@ void kernel_main(int argc, char **argv)
         (void)argv;
 
         printf("%s", "Running stage 2 ...\n");
+
+        BootstrapAllocator *ba = BootstrapAllocator::getInstance();
+        (void)ba;
+
 }
 
 

@@ -10,6 +10,10 @@
 #ifndef __STDIO_H__
 #define __STDIO_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stdarg.h"
 
 int printf(const char *__format, ...) __attribute__((format (printf, 1, 2)));
@@ -18,6 +22,10 @@ int sprintf(char *__dest, const char *__format, ...) __attribute__((format (prin
 int snprintf(char *__dest, unsigned int __size, const char *__format, ...) __attribute__((format (printf, 3, 4)));
 int vsprintf(char *__dest, const char *__format, va_list __vl) __attribute__((format (printf, 2, 0)));
 int vsnprintf(char *__dest, unsigned int __size, const char *__format, va_list __vl) __attribute__((format (printf, 3, 0)));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
