@@ -13,7 +13,7 @@ extern "C" {
 
 #include "stdio.h"
 #include "kernel.h"
-#include "mem/BootstrapAllocator.h"
+#include "Memory/BootstrapAllocator.h"
 
 void kernel_main(int argc, char **argv)
 {

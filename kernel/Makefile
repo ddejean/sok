@@ -9,6 +9,8 @@ CC    := gcc
 CPP   := g++
 AS    := gcc
 LD    := ld
+AR 	  := ar
+MKDIR := mkdir
 
 # Include util functions
 include build/utils.mk
@@ -20,23 +22,6 @@ CFLAGS   = $(FLAGS) -std=c99 -nostdinc -fno-stack-protector
 CXXFLAGS = $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
 LDFLAGS  = -melf_i386
 
-# Build sources
-DIRS      := . boot lib mem
-C_FILES   := $(wildcard $(addsuffix /*.c, $(DIRS)))
-CPP_FILES := $(wildcard $(addsuffix /*.cpp, $(DIRS)))
-ASM_FILES := $(wildcard $(addsuffix /*.s, $(DIRS)))
-FILES     := $(C_FILES) $(CPP_FILES) $(ASM_FILES)
-
-# Includes
-INCLUDES_DIR := . lib/
-INCLUDES     := $(addprefix -I, $(INCLUDES_DIR))
-
-# Make automatically search source files
-vpath %.h $(DIRS)
-vpath %.c $(DIRS)
-vpath %.cpp $(DIRS)
-vpath %.s $(DIRS)
-
 # Output configuration
 OUTPUT_BASE := out
 
@@ -44,18 +29,32 @@ OUTPUT_BASE := out
 # defines different targets, flags and output directories
 include build/kernel-configs.mk
 
-### Create list of output files ###
-# We want a list of obj files
-OBJS := $(call targetize, $(FILES))
-# The bootstrap file must be linked first
-OBJS := $(call first-and-unique, crt0.o, $(OBJS))
-# Set the output directory
-OBJS := $(addprefix $(OUTPUT)/, $(OBJS))
+# Includes
+INCLUDES := -I. -ICUtils/
+
+# Main kernel files
+MAIN_FILES 	:= $(call all-compilables-under, .)
+MAIN_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(MAIN_FILES)))
+
+# Boot files (need special link)
+BOOT_FILES 	:= $(call first-and-unique, boot/crt0.s, $(call all-compilables-under, boot))
+BOOT_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(BOOT_FILES)))
+
+# Library builds
+LIBRARY_NAMES 	:= CUtils Memory
+LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
+LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
+LDFLAGS			+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
 
 ### Build rules ###
-$(KERNEL_CONFIGS): boot/kernel.lds $(OBJS) 
-	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out boot/kernel.lds, $^)
+$(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
+	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out $<, $^)
 
+# Archive creation
+include build/library.mk
+$(foreach lib, $(LIBRARY_NAMES), $(eval $(call LIBRARY_BUILD,$(lib))))
+
+# Compilation rules
 $(OUTPUT)/%.o: %.s $(OUTPUT)
 	$(AS) $(FLAGS) $(INCLUDES) -c $< -o $@
 
@@ -66,8 +65,13 @@ $(OUTPUT)/%.o: %.c $(OUTPUT)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT):
-	mkdir -p $(OUTPUT)
+	mkdir -p $@
 
+# Boot build
+$(BOOT_OBJS): $(OUTPUT)/boot
+$(OUTPUT)/boot:
+	mkdir -p $@
+	
 .PHONY: clean
 clean:
 	rm -f $(KERNEL_CONFIGS)
