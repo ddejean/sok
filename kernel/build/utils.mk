@@ -23,7 +23,7 @@ define dirs-to-libs
 $(addsuffix .a, $(addprefix lib, $(strip $(1))))
 endef
 
-# libs-to-paths(libdir, libfile, outputdir) 
+# libs-to-paths(libdir, libfile, outputdir)
 # Create compilation paths from libs file names and directory names
 define libs-to-paths
 $(addprefix $(3), $(join $(strip $(1)), $(strip $(2))))
@@ -47,3 +47,8 @@ define objetize-compilables
 $(strip $(patsubst %.s, %.o, $(patsubst %.cpp, %.o, $(patsubst %.c, %.o, $(1)))))
 endef
 
+# generate-dependencies
+# Change file names from source files to object files
+define generate-dependencies
+$(strip $(patsubst %.s, %.d, $(patsubst %.cpp, %.d, $(patsubst %.c, %.d, $(1)))))
+endef

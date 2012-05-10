@@ -33,12 +33,14 @@ include build/kernel-configs.mk
 INCLUDES := -I. -ICUtils/
 
 # Main kernel files
-MAIN_FILES 	:= $(call all-compilables-under, .)
+MAIN_FILES 	:= $(wildcard *.c) $(wildcard *.cpp) $(wildcard *.s)
 MAIN_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(MAIN_FILES)))
+MAIN_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(MAIN_FILES)))
 
 # Boot files (need special link)
 BOOT_FILES 	:= $(call first-and-unique, boot/crt0.s, $(call all-compilables-under, boot))
 BOOT_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(BOOT_FILES)))
+BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)))
 
 # Library builds
 LIBRARY_NAMES 	:= CUtils Memory
@@ -46,32 +48,49 @@ LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
 LDFLAGS			+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
 
-### Build rules ###
+### Main link ###
 $(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
+	@echo $(MAIN_DEPS) $(BOOT_DEPS)
 	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out $<, $^)
 
-# Archive creation
+### Handle source file dependencies to header files ###
+$(OUTPUT)/%.d: %.cpp
+	@$(MKDIR) -p $(@D)
+	@echo -n "$(@D)/" > $@
+	$(CC) -MM $< $(INCLUDES) >> $@
+
+$(OUTPUT)/%.d: %.c
+	@$(MKDIR) -p $(@D)
+	@echo -n "$(@D)/" > $@
+	$(CC) -MM $< $(INCLUDES) > $@
+
+$(OUTPUT)/%.d: %.s
+	@$(MKDIR) -p $(@D)
+	@echo -n "$(@D)/" > $@
+	$(CC) -MM $< $(INCLUDES) > $@
+
+ifneq "$(OUTPUT)" ""
+-include $(MAIN_DEPS)
+-include $(BOOT_DEPS)
+endif
+
+### Archive creation ###
 include build/library.mk
 $(foreach lib, $(LIBRARY_NAMES), $(eval $(call LIBRARY_BUILD,$(lib))))
 
-# Compilation rules
-$(OUTPUT)/%.o: %.s $(OUTPUT)
+### Generic compilation rules ###
+$(OUTPUT)/%.o: %.s
+	@$(MKDIR) -p $(@D)
 	$(AS) $(FLAGS) $(INCLUDES) -c $< -o $@
 
-$(OUTPUT)/%.o: %.cpp $(OUTPUT)
+$(OUTPUT)/%.o: %.cpp
+	@$(MKDIR) -p $(@D)
 	$(CPP) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OUTPUT)/%.o: %.c $(OUTPUT)
+$(OUTPUT)/%.o: %.c
+	@$(MKDIR) -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OUTPUT):
-	mkdir -p $@
-
-# Boot build
-$(BOOT_OBJS): $(OUTPUT)/boot
-$(OUTPUT)/boot:
-	mkdir -p $@
-	
 .PHONY: clean
 clean:
 	rm -f $(KERNEL_CONFIGS)
