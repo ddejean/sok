@@ -3,14 +3,25 @@
 # by Damien Dejean <djod4556@yahoo.fr> #
 ########################################
 
-# Tools
-SHELL := /bin/bash
-CC    := gcc
-CPP   := g++
-AS    := gcc
-LD    := ld
-AR 	  := ar
-MKDIR := mkdir
+SHELL  := /bin/bash
+
+# Raw tools
+CC     := gcc
+CPP    := g++
+AS     := gcc
+LD     := ld
+AR	   := ar
+MKDIR  := mkdir
+RM	   := rm
+
+# Displayed tools
+QCC    = @echo -e "\tCC\t " $@; $(CC)
+QCPP   = @echo -e "\tCPP\t " $@; $(CPP)
+QDEPS  = @echo -e "\tDEPS\t " $@; $(CC) -MM
+QAS    = @echo -e "\tAS\t " $@; $(AS)
+QLD    = @echo -e "\tLD\t " $@; $(LD)
+QAR 	  = @echo -e "\tAR\t " $@; $(AR)
+SMART_MKDIR = @test -d $(@D) || { echo -e "\tMKDIR\t " $(@D); $(MKDIR) -p $(@D); }
 
 # Include util functions
 include build/utils.mk
@@ -50,24 +61,23 @@ LDFLAGS			+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
 
 ### Main link ###
 $(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
-	@echo $(MAIN_DEPS) $(BOOT_DEPS)
-	$(LD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out $<, $^)
+	$(QLD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out $<, $^)
 
 ### Handle source file dependencies to header files ###
 $(OUTPUT)/%.d: %.cpp
-	@$(MKDIR) -p $(@D)
+	$(SMART_MKDIR)
 	@echo -n "$(@D)/" > $@
-	$(CC) -MM $< $(INCLUDES) >> $@
+	$(QDEPS) $< $(INCLUDES) >> $@
 
 $(OUTPUT)/%.d: %.c
-	@$(MKDIR) -p $(@D)
+	$(SMART_MKDIR)
 	@echo -n "$(@D)/" > $@
-	$(CC) -MM $< $(INCLUDES) > $@
+	$(QDEPS) $< $(INCLUDES) > $@
 
 $(OUTPUT)/%.d: %.s
-	@$(MKDIR) -p $(@D)
+	$(SMART_MKDIR)
 	@echo -n "$(@D)/" > $@
-	$(CC) -MM $< $(INCLUDES) > $@
+	$(QDEPS) $< $(INCLUDES) > $@
 
 ifneq "$(OUTPUT)" ""
 -include $(MAIN_DEPS)
@@ -80,19 +90,19 @@ $(foreach lib, $(LIBRARY_NAMES), $(eval $(call LIBRARY_BUILD,$(lib))))
 
 ### Generic compilation rules ###
 $(OUTPUT)/%.o: %.s
-	@$(MKDIR) -p $(@D)
-	$(AS) $(FLAGS) $(INCLUDES) -c $< -o $@
+	$(SMART_MKDIR)
+	$(QAS) $(FLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT)/%.o: %.cpp
-	@$(MKDIR) -p $(@D)
-	$(CPP) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(SMART_MKDIR)
+	$(QCPP) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT)/%.o: %.c
-	@$(MKDIR) -p $(@D)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(SMART_MKDIR)
+	$(QCC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm -f $(KERNEL_CONFIGS)
-	rm -rf out/
+	@echo -e "\tRM\t $(KERNEL_CONFIGS)"; $(RM) -f $(KERNEL_CONFIGS)
+	@echo -e "\tRM\t out/"; $(RM) -rf out/
 

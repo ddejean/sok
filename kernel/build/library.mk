@@ -31,7 +31,7 @@ $$(OUTPUT)/lib$(1).a: INCLUDES += $$(LOCAL_INCLUDES)
 $$(OUTPUT)/lib$(1).a: CFLAGS += $$(LOCAL_CFLAGS)
 $$(OUTPUT)/lib$(1).a: CXXFLAGS += $$(LOCAL_CXXFLAGS)
 $$(OUTPUT)/lib$(1).a: $$($(1)_OBJS)
-	$$(AR) rcs $$@ $$^
+	$$(QAR) rcs $$@ $$^
 
 endef
 
