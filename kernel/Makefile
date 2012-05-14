@@ -61,7 +61,7 @@ BOOT_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(BOOT_FILES)
 BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)))
 
 # Library builds
-LIBRARY_NAMES 	:= CUtils Memory
+LIBRARY_NAMES 	:= Memory CUtils # CUtils must be last for link dependency purposes
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
 KERNEL_LDFLAGS	+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))

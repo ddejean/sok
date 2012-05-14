@@ -10,12 +10,14 @@
 #ifndef _ASSERT_H_
 #define _ASSERT_H_
 
-#include "stdio.h"
+#include "panic.h"
 
-#define assert(cond)    do {                                                                                                            \
-                                if (!(cond)) {                                                                                          \
-                                        printf("%s (%s:%d): Assertion \"%s\" failed.", __FILE__, __func__, __LINE__, #cond);            \
-                                }                                                                                                       \
-                        } while (0)
+#define assert(cond)                                                    \
+        do {                                                            \
+                if (!(cond)) {                                          \
+                        panic("%s (%s:%d): Assertion \"%s\" failed.",   \
+                             __FILE__, __func__, __LINE__, #cond);      \
+                }                                                       \
+        } while (0)
 
 #endif
