@@ -123,6 +123,7 @@ void TestBuddyAllocator::testFullAllocationsBySizes(void)
    }
 }
 
+
 void TestBuddyAllocator::testAllocateOneOfEachSize(void)
 {
    int size = 0;
@@ -145,4 +146,48 @@ void TestBuddyAllocator::testAllocateOneOfEachSize(void)
    chunk = _allocator->alloc(HEAP_SIZE);
    TS_ASSERT_DIFFERS(chunk, NULL);
    _allocator->free(chunk, HEAP_SIZE);
+}
+
+
+void TestBuddyAllocator::testSmallAllocations(void)
+{
+   void *chunk;
+   void *areas[3];
+
+   /* Try small and special allocations */
+   for (int i = 1; i < 4; i++) {
+      areas[i-1] = _allocator->alloc(i);
+      TS_ASSERT_DIFFERS(areas[0], NULL);
+   }
+
+   for (int i = 1; i < 4; i++) {
+      _allocator->free(areas[i-1], i);
+   }
+
+   /* Check allocator consistency */
+   chunk = _allocator->alloc(HEAP_SIZE);
+   TS_ASSERT_DIFFERS(chunk, NULL);
+   _allocator->free(chunk, HEAP_SIZE);
+}
+
+
+void TestBuddyAllocator::testBadAllocationRequests(void)
+{
+   void *chunk;
+
+   chunk = _allocator->alloc(0);
+   TS_ASSERT_EQUALS(chunk, NULL);
+}
+
+
+void TestBuddyAllocator::testBadFreeRequests(void)
+{
+   void *chunk = (void*)0xDEADBEEF;
+
+   /*
+    * Even if this is not directly visible,
+    * ensure this does not throw something bad.
+    */
+   _allocator->free(NULL, 8);
+   _allocator->free(chunk, 0);
 }

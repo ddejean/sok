@@ -22,6 +22,10 @@ public:
    void testCheckAddresses(void);
    void testFullAllocationsBySizes(void);
    void testAllocateOneOfEachSize(void);
+   void testSmallAllocations(void);
+
+   void testBadAllocationRequests(void);
+   void testBadFreeRequests(void);
 };
 
 #endif /* TESTBUDDYALLOCATOR_H_ */

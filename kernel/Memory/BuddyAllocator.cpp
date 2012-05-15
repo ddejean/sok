@@ -21,8 +21,6 @@ BuddyAllocator::BuddyAllocator(struct freeblock *freeAreas,
 {
         uint32_t i;
 
-        //assert(_heapSize >= (uint32_t)(1 << _capacities));
-
         /* Clear all chunk links */
         for(i = 0; i < _capacities - 1; i++) {
                 freeAreas[i].next = (struct freeblock*) NULL;
@@ -56,8 +54,14 @@ void* BuddyAllocator::alloc(size_t size)
 	struct freeblock *freeArea;
 	struct freeblock *buddyArea;
 
-        sizePower = powerFromSize(size);
-        power = sizePower;
+    if (size == 0) {
+        return NULL;
+    } else if (size < 4) {
+        size = 4;
+    }
+
+    sizePower = powerFromSize(size);
+    power = sizePower;
 
 	/* Heap is too small */
 	if (sizePower > _capacities) {
@@ -100,35 +104,41 @@ void BuddyAllocator::free(void *chunk, size_t size)
 	struct freeblock *potentialBuddy;
 	struct freeblock *matchingBuddy;
 
-        power = powerFromSize(size);
-        size = (size_t) 1 << power;
+    if (chunk == NULL || size == 0) {
+        return;
+    }
+
+    if (size < 4) {
+        size = 4;
+    }
+
+    power = powerFromSize(size);
+    size = (size_t) 1 << power;
 
 	matchingBuddy = (struct freeblock *) myBuddyAddress(chunk, size);
-        assert(matchingBuddy != NULL);
+    assert(matchingBuddy != NULL);
 
 	potentialBuddy = &(_freeAreas[power-1]);
 
-	/* Tant qu'il reste des conjoints potentiels */
 	while (potentialBuddy != NULL && potentialBuddy->next != NULL) {
 		if (potentialBuddy->next == matchingBuddy) {
-			/* Retirer le conjoint de la liste */
 			potentialBuddy->next = potentialBuddy->next->next;
-			/* Conjoint a droite ou a gauche ? */
+			/* Is it the left or the right buddy ? */
 			chunk = (matchingBuddy < (struct freeblock*) chunk) ? (void*) matchingBuddy : chunk;
-			/* Preparer une nouvelle recherche d'un conjoint plus grand */
-	                potentialBuddy = &(_freeAreas[power]);
+
+			/* Look for a bigger buddy */
+            potentialBuddy = &(_freeAreas[power]);
 			power++;
 
-			/* Adresse du conjoint */
+			/* New buddy address */
 			size *= 2;
 			matchingBuddy = (struct freeblock *) myBuddyAddress(chunk, size);
 		} else {
-			/* Ce n'est pas notre conjoint, continuer */
 			potentialBuddy = potentialBuddy->next;
 		}
 	}
 
-	/* Il reste a remettre la chunk libre a la bonne place */
+	/* Finally chain the buddy */
 	((struct freeblock*) chunk)->next = _freeAreas[power-1].next;
 	_freeAreas[power-1].next = (struct freeblock*) chunk;
 }
