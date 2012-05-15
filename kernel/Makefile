@@ -6,21 +6,23 @@
 SHELL  := /bin/bash
 
 # Raw tools
-CC     := gcc
-CPP    := g++
-AS     := gcc
-LD     := ld
-AR	   := ar
-MKDIR  := mkdir
-RM	   := rm
+CC     		:= gcc
+CPP    		:= g++
+AS     		:= gcc
+LD     		:= ld
+AR	   		:= ar
+MKDIR  		:= mkdir
+RM	   		:= rm
+TESTGEN 	:= CxxTest/cxxtestgen.pl
 
 # Displayed tools
-QCC    = @echo -e "\tCC\t " $@; $(CC)
-QCPP   = @echo -e "\tCPP\t " $@; $(CPP)
-QDEPS  = @echo -e "\tDEPS\t " $@; $(CC) -MM
-QAS    = @echo -e "\tAS\t " $@; $(AS)
-QLD    = @echo -e "\tLD\t " $@; $(LD)
-QAR 	  = @echo -e "\tAR\t " $@; $(AR)
+QCC    		= @echo -e "\tCC\t " $@; $(CC)
+QCPP   		= @echo -e "\tCPP\t " $@; $(CPP)
+QDEPS  		= @echo -e "\tDEPS\t " $@; $(CC) -MM
+QAS    		= @echo -e "\tAS\t " $@; $(AS)
+QLD    		= @echo -e "\tLD\t " $@; $(LD)
+QAR 	  	= @echo -e "\tAR\t " $@; $(AR)
+QTESTGEN 	= @echo -e "\tTESTGEN\t " $@; $(TESTGEN)
 SMART_MKDIR = @test -d $(@D) || { echo -e "\tMKDIR\t " $(@D); $(MKDIR) -p $(@D); }
 
 # Include util functions
@@ -28,10 +30,15 @@ include build/utils.mk
 
 ### Build parameters ###
 # Recursively expanded variables to allow flag redefinition by kernel-configs.mk
-FLAGS    = -m32 -Wall -Wextra -Werror -g -gstabs -pipe
-CFLAGS   = $(FLAGS) -std=c99 -nostdinc -fno-stack-protector
-CXXFLAGS = $(FLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
-LDFLAGS  = -melf_i386
+FLAGS    := -m32 -Wall -Wextra -Werror -g -gstabs -pipe
+CFLAGS   := $(FLAGS) -std=c99
+CXXFLAGS := $(FLAGS)
+LDFLAGS  := -melf_i386
+
+# Kernel compilation and link flags
+KERNEL_CFLAGS = $(CFLAGS) -nostdinc -fno-stack-protector
+KERNEL_CXXFLAGS = $(CXXFLAGS) -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-exceptions -fno-rtti -fno-stack-protector
+KERNEL_LDFLAGS = $(LDFLAGS)
 
 # Output configuration
 OUTPUT_BASE := out
@@ -57,11 +64,11 @@ BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)
 LIBRARY_NAMES 	:= CUtils Memory
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
-LDFLAGS			+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
+KERNEL_LDFLAGS	+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
 
 ### Main link ###
-$(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
-	$(QLD) $(LDFLAGS) -e entry -T $< -o $@ $(filter-out $<, $^)
+$(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARY_FILES)
+	$(QLD) $(KERNEL_LDFLAGS) -e entry -T $< -o $@ $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
 
 ### Handle source file dependencies to header files ###
 $(OUTPUT)/%.d: %.cpp
@@ -95,11 +102,11 @@ $(OUTPUT)/%.o: %.s
 
 $(OUTPUT)/%.o: %.cpp
 	$(SMART_MKDIR)
-	$(QCPP) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(QCPP) $(KERNEL_CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OUTPUT)/%.o: %.c
 	$(SMART_MKDIR)
-	$(QCC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(QCC) $(KERNEL_CFLAGS) $(INCLUDES) -c $< -o $@
 
 .PHONY: clean
 clean:

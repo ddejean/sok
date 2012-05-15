@@ -13,11 +13,7 @@
 /**
  * Definition of NULL pointer.
  */
-#ifdef __cplusplus
-#define NULL    0
-#else
 #define NULL    ((void*)0)
-#endif
 
 /**
  * Standard size type.
