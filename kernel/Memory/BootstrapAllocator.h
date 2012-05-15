@@ -24,8 +24,18 @@ class BootstrapAllocator: public BuddyAllocator {
                 void* operator new(size_t);
 
         public:
-                /* Partial singleton implementation */
+                /*
+                 * Singleton implementation: retrieve the instance of the
+                 * allocator inside the singleton.
+                 */
                 static BootstrapAllocator *getInstance(void);
+
+                /*
+                 * Reset the allocator state. Beware, this will destroy memory
+                 * allocation mapping and data in the allocated chunks.
+                 * For testing purpose essentially.
+                 */
+                static void reset(void);
 };
 
 #endif /*_BOOTSTRAP_ALLOCATOR_H_ */

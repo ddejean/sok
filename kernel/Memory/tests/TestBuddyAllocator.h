@@ -17,15 +17,16 @@ public:
 	void setUp(void);
 	void tearDown(void);
 
-   void testSimpleAllocations(void);
-   void testFreeBoundaries(void);
-   void testCheckAddresses(void);
-   void testFullAllocationsBySizes(void);
-   void testAllocateOneOfEachSize(void);
-   void testSmallAllocations(void);
+    void testHeapSize(void);
+    void testSimpleAllocations(void);
+    void testFreeBoundaries(void);
+    void testCheckAddresses(void);
+    void testFullAllocationsBySizes(void);
+    void testAllocateOneOfEachSize(void);
+    void testSmallAllocations(void);
 
-   void testBadAllocationRequests(void);
-   void testBadFreeRequests(void);
+    void testBadAllocationRequests(void);
+    void testBadFreeRequests(void);
 };
 
 #endif /* TESTBUDDYALLOCATOR_H_ */

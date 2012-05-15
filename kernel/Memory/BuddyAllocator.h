@@ -38,6 +38,9 @@ class BuddyAllocator {
                 /* Allocator implementation */
                 void *alloc(size_t size);
                 void free(void *chunk, size_t size);
+
+                /* Convenience */
+                uint32_t heapSize(void);
 };
 
 #endif /*_BUDDY_ALLOCATOR_H_ */

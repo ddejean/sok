@@ -7,6 +7,7 @@
  */
 
 #include "BootstrapAllocator.h"
+#include "string.h"
 
 /* Allocator heap size: the size is computed like this: 2^BOOTSTRAP_POWER */
 #ifndef         BOOTSTRAP_POWER
@@ -51,5 +52,12 @@ BootstrapAllocator* BootstrapAllocator::getInstance(void)
                 BootstrapAllocator::_instance = new BootstrapAllocator();
         }
         return BootstrapAllocator::_instance;
+}
+
+void BootstrapAllocator::reset(void)
+{
+       memset(memoryHeap, BOOTSTRAP_HEAP_SIZE, 0);
+       memset(freeAreas, BOOTSTRAP_POWER, sizeof(struct freeblock));
+       _instance =  new BootstrapAllocator();
 }
 

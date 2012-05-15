@@ -32,6 +32,11 @@ BuddyAllocator::BuddyAllocator(struct freeblock *freeAreas,
 
 }
 
+uint32_t BuddyAllocator::heapSize(void)
+{
+    return _heapSize;
+}
+
 /**
  * Compute the upper power of two that contains an number.
  * @param n the number from which we compute the power

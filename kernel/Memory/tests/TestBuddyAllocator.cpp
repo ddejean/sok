@@ -15,6 +15,13 @@ void TestBuddyAllocator::tearDown(void)
    delete _allocator;
 }
 
+void TestBuddyAllocator::testHeapSize(void)
+{
+    uint32_t heapSize;
+
+    heapSize = _allocator->heapSize();
+    TS_ASSERT_EQUALS(heapSize, (uint32_t)HEAP_SIZE);
+}
 
 void TestBuddyAllocator::testSimpleAllocations(void)
 {
