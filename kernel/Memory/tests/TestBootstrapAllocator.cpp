@@ -12,9 +12,9 @@ void TestBootstrapAllocator::testSingleton(void)
     BootstrapAllocator *a1, *a2;
 
     a1 = BootstrapAllocator::getInstance();
-    TS_ASSERT_DIFFERS(a1, NULL);
+    TS_ASSERT_DIFFERS(a1, (void*)NULL);
     a2 = BootstrapAllocator::getInstance();
-    TS_ASSERT_DIFFERS(a2, NULL);
+    TS_ASSERT_DIFFERS(a2, (void*)NULL);
 
     TS_ASSERT_EQUALS(a1, a2);
 }
@@ -25,16 +25,16 @@ void TestBootstrapAllocator::testReset(void)
     BootstrapAllocator *ba;
 
     ba = BootstrapAllocator::getInstance();
-    TS_ASSERT_DIFFERS(ba, NULL);
+    TS_ASSERT_DIFFERS(ba, (void*)NULL);
 
     chunk = (uint32_t*) ba->alloc(32);
-    TS_ASSERT_DIFFERS(chunk, NULL);
+    TS_ASSERT_DIFFERS(chunk, (void*)NULL);
     *chunk = 0xDEADBEEFu;
 
     BootstrapAllocator::reset();
     TS_ASSERT_DIFFERS(*chunk, 0xDEADBEEFu);
 
     chunk = (uint32_t*) ba->alloc((uint32_t) ba->heapSize());
-    TS_ASSERT_DIFFERS(chunk, NULL);
+    TS_ASSERT_DIFFERS(chunk, (void*)NULL);
 }
 

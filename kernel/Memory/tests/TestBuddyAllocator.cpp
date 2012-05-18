@@ -31,17 +31,17 @@ void TestBuddyAllocator::testSimpleAllocations(void)
    uint32_t i1, i2, iref;
 
    mref = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(mref, NULL); 
+   TS_ASSERT_DIFFERS(mref, (void*)NULL); 
 
    memset(mref, 4, HEAP_SIZE);
    _allocator->free(mref, HEAP_SIZE);
 
    m1 = _allocator->alloc(64);
-   TS_ASSERT_DIFFERS(m1, NULL); 
+   TS_ASSERT_DIFFERS(m1, (void*)NULL); 
    memset(m1, 0, 1);
 
    m2 = _allocator->alloc(64);
-   TS_ASSERT_DIFFERS(m2, NULL); 
+   TS_ASSERT_DIFFERS(m2, (void*)NULL); 
    memset(m2, 0, 1);
 
    i1 = (uint32_t)m1;
@@ -53,7 +53,7 @@ void TestBuddyAllocator::testSimpleAllocations(void)
    _allocator->free(m2, 64);
 
    mref = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(mref, NULL);
+   TS_ASSERT_DIFFERS(mref, (void*)NULL);
    memset(mref, 4, HEAP_SIZE);
    _allocator->free(mref, HEAP_SIZE);
 }
@@ -64,7 +64,7 @@ void TestBuddyAllocator::testFreeBoundaries(void)
    void *m1 = NULL;
 
    m1 = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(m1, NULL);
+   TS_ASSERT_DIFFERS(m1, (void*)NULL);
    _allocator->free(m1, HEAP_SIZE);
 }
 
@@ -77,17 +77,17 @@ void TestBuddyAllocator::testCheckAddresses(void)
    uint32_t i1, i2, iref;
 
    mref = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(mref, NULL); 
+   TS_ASSERT_DIFFERS(mref, (void*)NULL); 
 
    memset(mref, 4, HEAP_SIZE);
    _allocator->free(mref, HEAP_SIZE);
 
    m1 = _allocator->alloc(64);
-   TS_ASSERT_DIFFERS(m1, NULL); 
+   TS_ASSERT_DIFFERS(m1, (void*)NULL); 
    memset(m1, 0, 1);
 
    m2 = _allocator->alloc(64);
-   TS_ASSERT_DIFFERS(m2, NULL); 
+   TS_ASSERT_DIFFERS(m2, (void*)NULL); 
    memset(m2, 0, 1);
 
    i1 = (uint32_t)m1;
@@ -113,7 +113,7 @@ void TestBuddyAllocator::testFullAllocationsBySizes(void)
       /* Allocate all the memory in small chunks */
       for (int i = 0; i < HEAP_SIZE / allocSize; i++) {
          chunk = _allocator->alloc(allocSize);
-         TS_ASSERT_DIFFERS(chunk, NULL);
+         TS_ASSERT_DIFFERS(chunk, (void*)NULL);
          areas[i] = chunk;
          chunk = NULL;
       }
@@ -125,7 +125,7 @@ void TestBuddyAllocator::testFullAllocationsBySizes(void)
 
       /* Check memory have been released */
       chunk = _allocator->alloc(HEAP_SIZE);
-      TS_ASSERT_DIFFERS(chunk, NULL);
+      TS_ASSERT_DIFFERS(chunk, (void*)NULL);
       _allocator->free(chunk, HEAP_SIZE);
    }
 }
@@ -140,7 +140,7 @@ void TestBuddyAllocator::testAllocateOneOfEachSize(void)
    for (int i = MAX_INDEX - 1; i >= 4; i--) {
       size = 1 << i;
       chunk = _allocator->alloc(size);
-      TS_ASSERT_DIFFERS(chunk, NULL);
+      TS_ASSERT_DIFFERS(chunk, (void*)NULL);
       areas[i] = chunk;
       chunk = NULL;
    }
@@ -151,7 +151,7 @@ void TestBuddyAllocator::testAllocateOneOfEachSize(void)
 
    /* Check memory have been released */
    chunk = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(chunk, NULL);
+   TS_ASSERT_DIFFERS(chunk, (void*)NULL);
    _allocator->free(chunk, HEAP_SIZE);
 }
 
@@ -164,7 +164,7 @@ void TestBuddyAllocator::testSmallAllocations(void)
    /* Try small and special allocations */
    for (int i = 1; i < 4; i++) {
       areas[i-1] = _allocator->alloc(i);
-      TS_ASSERT_DIFFERS(areas[0], NULL);
+      TS_ASSERT_DIFFERS(areas[0], (void*)NULL);
    }
 
    for (int i = 1; i < 4; i++) {
@@ -173,7 +173,7 @@ void TestBuddyAllocator::testSmallAllocations(void)
 
    /* Check allocator consistency */
    chunk = _allocator->alloc(HEAP_SIZE);
-   TS_ASSERT_DIFFERS(chunk, NULL);
+   TS_ASSERT_DIFFERS(chunk, (void*)NULL);
    _allocator->free(chunk, HEAP_SIZE);
 }
 
@@ -183,7 +183,7 @@ void TestBuddyAllocator::testBadAllocationRequests(void)
    void *chunk;
 
    chunk = _allocator->alloc(0);
-   TS_ASSERT_EQUALS(chunk, NULL);
+   TS_ASSERT_EQUALS(chunk, (void*)NULL);
 }
 
 

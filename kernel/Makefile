@@ -64,7 +64,7 @@ BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)
 LIBRARY_NAMES 	:= Memory CUtils # CUtils must be last for link dependency purposes
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
-KERNEL_LDFLAGS	+= -L$(OUTPUT) $(call generate-libs-flags, $(LIBRARY_NAMES))
+KERNEL_LDFLAGS	+= -L$(OUTPUT)
 
 ### Main link ###
 $(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARY_FILES)

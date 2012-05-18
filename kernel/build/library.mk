@@ -21,7 +21,7 @@ $(1)_FILES := $$(call all-compilables-under, $(1))
 $(1)_OBJS  := $$(addprefix $$(OUTPUT)/, $$(call objetize-compilables, $$($(1)_FILES)))
 $(1)_DEPS  := $$(addprefix $$(OUTPUT)/, $$(call generate-dependencies, $$($(1)_FILES)))
 
-# Include dependency targets
+# Include dependency targets if we're building
 ifneq "$$(OUTPUT)" ""
 -include $$($(1)_DEPS)
 endif
@@ -61,7 +61,10 @@ $$(OUTPUT)/$(1)/tests/test$(1).cpp: $$($(1)_TEST_FILES)
 	$$(QTESTGEN) -o $$@ --error-printer $(1)/tests/*.h
 
 $$(OUTPUT)/$(1)/tests/%.o: $(1)/tests/%.cpp
-	$$(QCPP) $$(CXXFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(QCPP) $$(CXXFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
+
+$$(OUTPUT)/$(1)/tests/%.o: $(1)/tests/%.c
+	$$(QCC) $$(CFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
 
 else
 
