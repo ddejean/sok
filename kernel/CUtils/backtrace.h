@@ -23,8 +23,10 @@ extern "C" {
  * @param array a pointer array capable of holding at least {@code size}
  *        elements
  * @param size the maximum number of stack frames to unwind
+ * @return the number of entries written into the array (between 0 and
+ *        {@code size}, included).
  */
-void backtrace(void **array, int size);
+int backtrace(void **array, int size);
 
 
 #ifdef __cplusplus

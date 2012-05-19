@@ -36,6 +36,8 @@ backtrace:                              # backtrace(void **array, int size)
     movl    12(%ebp), %edx              # %edx = size
     leal    (%ecx, %edx, 4), %edx       # %edx = &array[size]
 
+    pushl   %ecx                        # save array for later use
+
 backtrace.loop:
     # Exit when:
     #   - %ecx == %edx (we wrote `size` entries into array)
@@ -61,7 +63,15 @@ backtrace.loop:
     jmp     backtrace.loop
 
 backtrace.exit:
-    popl   %ebp
+    popl    %edx                        # %edx = array
+    popl    %ebp                        # restore %ebp
+
+    # Return the number of written entries
+    # (difference between %ecx and the array start)
+    #
+    movl    %ecx, %eax
+    subl    %edx, %eax
+    shrl    $2, %eax                    # %eax = (%ecx - %edx) / 4
     ret
 
 

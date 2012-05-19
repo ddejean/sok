@@ -19,7 +19,7 @@ __inline__ static void hlt(void)
 void panic(const char *fmt, ...)
 {
         va_list args;
-        int i;
+        int i, max;
         void *addr;
 
         /* Print user message */
@@ -28,15 +28,13 @@ void panic(const char *fmt, ...)
         va_end(args);
 
         /* Get the stack trace */
-        memset(backtrace_buffer, 0, MAX_STACK_TRACE_DEPTH * sizeof(void *));
-        backtrace(backtrace_buffer, MAX_STACK_TRACE_DEPTH);
+        memset(backtrace_buffer, 1, MAX_STACK_TRACE_DEPTH * sizeof(void *));
+        max = backtrace(backtrace_buffer, MAX_STACK_TRACE_DEPTH);
 
         /* Print the stack trace */
-        printf("\nstack trace:");
-        for (i = 0; i < MAX_STACK_TRACE_DEPTH; ++i) {
-                if (!(addr = backtrace_buffer[i])) {
-                        break;
-                }
+        printf("\nstack trace:\n");
+        for (i = 0; i < max; ++i) {
+                addr = backtrace_buffer[i];
                 printf(" %3d: %08x\n", i, (uintptr_t) addr);
         }
 
