@@ -3,7 +3,7 @@
  *
  * crt0.s Assembly bootstrap for x86 targets
  * by Damien Dejean <djod4556@yahoo.fr>
- * 
+ *
  * This kernel entry point expect to be loaded by a multiboot compliant
  * bootloader like GRUB.
  *
@@ -102,11 +102,11 @@ bootstrap_gdt:
     .long   0x0         /* Null gate */
     .long   0x0
     .long   0x0000FFFF  /* Code selector with offset 0x40000000 */
-    .long   0x40CF9A00  
+    .long   0x40CF9A00
     .long   0x0000FFFF  /* Data selector with offset 0x40000000 */
     .long   0x40CF9200
     .long   0x0000FFFF  /* Code selector without offset */
-    .long   0x00CF9A00  
+    .long   0x00CF9A00
     .long   0x0000FFFF  /* Data selector without offset */
     .long   0x00CF9200
 bootstrap_gdt_end:

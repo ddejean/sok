@@ -17,7 +17,7 @@ LOCAL_CXXFLAGS :=
 -include $(1)/lib.mk
 
 # Library dependencies
-$(1)_FILES := $$(call all-compilables-under, $(1))
+$(1)_FILES := $$(call all-compilables-under, $(1)) $$(call all-compilables-under, $(1)/$(ARCH))
 $(1)_OBJS  := $$(addprefix $$(OUTPUT)/, $$(call objetize-compilables, $$($(1)_FILES)))
 $(1)_DEPS  := $$(addprefix $$(OUTPUT)/, $$(call generate-dependencies, $$($(1)_FILES)))
 

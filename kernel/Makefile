@@ -14,6 +14,7 @@ AR	   		:= ar
 MKDIR  		:= mkdir
 RM	   		:= rm
 TESTGEN 	:= CxxTest/cxxtestgen.pl
+OBJCOPY     := objcopy
 
 # Displayed tools
 QCC    		= @echo -e "\tCC\t " $@; $(CC)
@@ -23,14 +24,18 @@ QAS    		= @echo -e "\tAS\t " $@; $(AS)
 QLD    		= @echo -e "\tLD\t " $@; $(LD)
 QAR 	  	= @echo -e "\tAR\t " $@; $(AR)
 QTESTGEN 	= @echo -e "\tTESTGEN\t " $@; $(TESTGEN)
+QOBJCOPY    = @echo -e "\tOBJCOPY\t " $@; $(OBJCOPY)
 SMART_MKDIR = @test -d $(@D) || { echo -e "\tMKDIR\t " $(@D); $(MKDIR) -p $(@D); }
 
 # Include util functions
 include build/utils.mk
 
 ### Build parameters ###
+# Architecture
+ARCH     := x86
 # Recursively expanded variables to allow flag redefinition by kernel-configs.mk
-FLAGS    := -m32 -Wall -Wextra -Werror -g -gstabs -pipe
+DEFS     := -DARCH=$(ARCH)
+FLAGS    := -m32 -Wall -Wextra -Werror -g -gstabs -pipe $(DEFS)
 CFLAGS   := $(FLAGS) -std=c99
 CXXFLAGS := $(FLAGS)
 LDFLAGS  := -melf_i386
@@ -51,17 +56,17 @@ include build/kernel-configs.mk
 INCLUDES := -I. -ICUtils/
 
 # Main kernel files
-MAIN_FILES 	:= $(wildcard *.c) $(wildcard *.cpp) $(wildcard *.s)
+MAIN_FILES 	:= $(wildcard *.c) $(wildcard *.cpp) $(wildcard *.S)
 MAIN_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(MAIN_FILES)))
 MAIN_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(MAIN_FILES)))
 
 # Boot files (need special link)
-BOOT_FILES 	:= $(call first-and-unique, boot/crt0.s, $(call all-compilables-under, boot))
+BOOT_FILES 	:= $(call first-and-unique, boot/crt0.S, $(call all-compilables-under, boot))
 BOOT_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(BOOT_FILES)))
 BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)))
 
 # Library builds
-LIBRARY_NAMES 	:= Memory CUtils # CUtils must be last for link dependency purposes
+LIBRARY_NAMES 	:= Memory Arch CUtils # CUtils must be last for link dependency purposes
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
 KERNEL_LDFLAGS	+= -L$(OUTPUT)
@@ -81,7 +86,7 @@ $(OUTPUT)/%.d: %.c
 	@echo -n "$(@D)/" > $@
 	$(QDEPS) $< $(INCLUDES) > $@
 
-$(OUTPUT)/%.d: %.s
+$(OUTPUT)/%.d: %.S
 	$(SMART_MKDIR)
 	@echo -n "$(@D)/" > $@
 	$(QDEPS) $< $(INCLUDES) > $@
@@ -96,7 +101,7 @@ include build/library.mk
 $(foreach lib, $(LIBRARY_NAMES), $(eval $(call LIBRARY_BUILD,$(lib))))
 
 ### Generic compilation rules ###
-$(OUTPUT)/%.o: %.s
+$(OUTPUT)/%.o: %.S
 	$(SMART_MKDIR)
 	$(QAS) $(FLAGS) $(INCLUDES) -c $< -o $@
 

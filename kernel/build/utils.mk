@@ -7,7 +7,7 @@
 # targetize:
 # Creates compilation target files from source files
 define targetize
-$(notdir $(patsubst %.s,%.o,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(1)))))
+$(notdir $(patsubst %.S,%.o,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(1)))))
 endef
 
 # first-and-unique:
@@ -38,17 +38,17 @@ endef
 # all-compilables-under
 # Provide all compilable files (C, C++, ASM) under the directory
 define all-compilables-under
-$(strip $(wildcard $(1)/*.c) $(wildcard $(1)/*.cpp) $(wildcard $(1)/*.s))
+$(strip $(wildcard $(1)/*.c) $(wildcard $(1)/*.cpp) $(wildcard $(1)/*.S))
 endef
 
 # objetize-compilables
 # Change file names from source files to object files
 define objetize-compilables
-$(strip $(patsubst %.s, %.o, $(patsubst %.cpp, %.o, $(patsubst %.c, %.o, $(1)))))
+$(strip $(patsubst %.S, %.o, $(patsubst %.cpp, %.o, $(patsubst %.c, %.o, $(1)))))
 endef
 
 # generate-dependencies
 # Change file names from source files to object files
 define generate-dependencies
-$(strip $(patsubst %.s, %.d, $(patsubst %.cpp, %.d, $(patsubst %.c, %.d, $(1)))))
+$(strip $(patsubst %.S, %.d, $(patsubst %.cpp, %.d, $(patsubst %.c, %.d, $(1)))))
 endef
