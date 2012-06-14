@@ -15,8 +15,16 @@ SECTIONS
     _start = .;
 
     .text ALIGN(0x1000): AT(ADDR(.text) - kernel_offset) {
+        */crt0.o(.text)
         *(.text)
         *(.gnu.linkonce.t*)
+    }
+
+    .realmodecode : AT(ADDR(.realmodecode) - kernel_offset) {
+        /* Real mode code */
+        _real_mode_start = .;
+        *(.realmodecode)
+        _real_mode_end = .;
     }
 
     .rodata ALIGN(0x1000): AT(ADDR(.rodata) - kernel_offset) { 

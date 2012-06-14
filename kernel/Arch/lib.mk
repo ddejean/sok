@@ -1,14 +1,17 @@
 # The library must be linked with the kernel
-KERNEL_LDFLAGS += -lArch
+# --whole-archive because code like realmode code need to be included even if
+# LD is not able to see we use it
+KERNEL_LDFLAGS += --whole-archive -lArch --no-whole-archive
 
-$(OUTPUT)/Arch/$(ARCH)/rmcode.o: $(OUTPUT)/Arch/$(ARCH)/empty.o $(OUTPUT)/Arch/$(ARCH)/rmcode.bin
-	$(QOBJCOPY) $< --add-section=.rmcode=$(filter-out $<, $^) \
-		       --set-section-flags=.rmcode=contents,alloc,load,data \
+$(OUTPUT)/Arch/$(ARCH)/realmodecode.o: $(OUTPUT)/Arch/$(ARCH)/empty.o $(OUTPUT)/Arch/$(ARCH)/realmodecode.bin
+	$(QOBJCOPY) $< --add-section=.realmodecode=$(OUTPUT)/Arch/$(ARCH)/realmodecode.bin \
+		       --set-section-flags=.realmodecode=contents,alloc,load,data \
 			   $@
 
-$(OUTPUT)/Arch/$(ARCH)/rmcode.bin: $(OUTPUT)/Arch/$(ARCH)/relocable-rmcode.o
+$(OUTPUT)/Arch/$(ARCH)/realmodecode.bin: $(OUTPUT)/Arch/$(ARCH)/relocable-code.o
 	$(QLD) $(LDFLAGS) -e do_bios_call_rm -Ttext 0x2000 $< --oformat binary -o $@
+	@echo -e "\tRM\t $^"; $(RM) -rf $^
 
-$(OUTPUT)/Arch/$(ARCH)/relocable-rmcode.o: Arch/$(ARCH)/rmcode.S
+$(OUTPUT)/Arch/$(ARCH)/relocable-code.o: Arch/$(ARCH)/realmodecode.S
 	$(SMART_MKDIR)
 	$(QAS) $(FLAGS) $(INCLUDES) -c $< -o $@

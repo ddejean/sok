@@ -60,20 +60,15 @@ MAIN_FILES 	:= $(wildcard *.c) $(wildcard *.cpp) $(wildcard *.S)
 MAIN_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(MAIN_FILES)))
 MAIN_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(MAIN_FILES)))
 
-# Boot files (need special link)
-BOOT_FILES 	:= $(call first-and-unique, boot/crt0.S, $(call all-compilables-under, boot))
-BOOT_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(BOOT_FILES)))
-BOOT_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(BOOT_FILES)))
-
 # Library builds
-LIBRARY_NAMES 	:= Memory Arch CUtils # CUtils must be last for link dependency purposes
+LIBRARY_NAMES 	:= Boot Arch Memory CUtils # CUtils must be last for link dependency purposes
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
 KERNEL_LDFLAGS	+= -L$(OUTPUT)
 
 ### Main link ###
-$(KERNEL_CONFIGS): boot/kernel.lds $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARY_FILES)
-	$(QLD) $(KERNEL_LDFLAGS) -e entry -T $< -o $@ $(BOOT_OBJS) $(MAIN_OBJS) $(LIBRARIES_OUT)
+$(KERNEL_CONFIGS): Boot/kernel.lds $(MAIN_OBJS) $(LIBRARY_FILES)
+	$(QLD) $(KERNEL_LDFLAGS) -e entry -T $< -o $@ $(MAIN_OBJS) $(LIBRARIES_OUT)
 
 ### Handle source file dependencies to header files ###
 $(OUTPUT)/%.d: %.cpp
@@ -93,7 +88,6 @@ $(OUTPUT)/%.d: %.S
 
 ifneq "$(OUTPUT)" ""
 -include $(MAIN_DEPS)
--include $(BOOT_DEPS)
 endif
 
 ### Archive creation ###
