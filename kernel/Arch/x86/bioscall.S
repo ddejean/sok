@@ -35,14 +35,68 @@ bioscall:
 	cli
 
 	/* Save the kernel IDT and GDT and segment registers. */
-	sgdt	gdt_loc
-	sidt	idt_loc
+	sgdt	gdt_backup
+	sidt	idt_backup
 	pushw	%ds
 	pushw	%es
 	pushw	%fs
 	pushw	%gs
 	pushw	%ss
-	lcall	$0x08,$0f
+
+    /* Setup new data segment registers */
+    movl    $0x10,  %eax
+    movw    %ax,    %ds
+    movw    %ax,    %es
+    movw    %ax,    %fs
+    movw    %ax,    %gs
+    movw    %ax,    %ss
+
+    /* Segments and interrupts stuff are saved, adjust pointers. */
+    movl    $0xC0000000,    %eax
+    subl    %eax,           %esp
+    subl    %eax,           %ebp
+    subl    %eax,           %ecx
+
+    /* Call with right adressing mode */
+    jmp     $0x08,  $real_code - 0xC0000000
+
+
+/*
+ * There is no more address translation, all pointers have to be physically
+ * related to memory.
+ */
+real_code:
+    /* Call real realmode code */
+	pushl	%edx
+	pushl	%ecx
+    movl    $0x2000,%eax
+	call	%eax
+	addl	$8,     %esp
+
+	/* Restore the kernel IDT and GDT and segment registers. */
+	lidt	idt_backup - 0xC0000000
+	lgdt	gdt_backup - 0xC0000000
+    jmp     $0x18,      $virtual_code
+
+
+/*
+ * Adresse are virtual again.
+ */
+virtual_code:
+    /* Restore pointers */
+    movl    $0xC0000000,    %eax
+    addl    %eax,           %esp
+    addl    %eax,           %ebp
+
+    /* Return to translated memory to 3GB */
+    movl    $0x20,  %eax
+    movw    %ax,    %ds
+    movw    %ax,    %es
+    movw    %ax,    %fs
+    movw    %ax,    %gs
+    movw    %ax,    %ss
+
+    /* Restore execution context */
 	popw	%ss
 	popw	%gs
 	popw	%fs
@@ -51,28 +105,18 @@ bioscall:
 	popfl
 	ret
 
-0:	/* Segments and interrupts stuff are saved. */
-	pushl	%edx
-	pushl	%ecx
-	call	(0x2000 + 0xC0000000)
-	addl	$8,%esp
-
-	/* Restore the kernel IDT and GDT and segment registers. */
-	lidt	idt_loc
-	lgdt	gdt_loc
-	lret
 
 /**
  * Some space to save current GDT and IDT descriptors.
  */
 	.data
 	.align  2
-idt_loc:
+idt_backup:
 	.word   0
 	.long   0
 
 	.align  2
-gdt_loc:
+gdt_backup:
 	.word   0
 	.long   0
 

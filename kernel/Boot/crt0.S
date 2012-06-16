@@ -50,13 +50,13 @@ entry:
 
     /* Load the tricky GDT */
     lgdtl   gdt_desc - 0xC0000000
-    movw    $0x10,      %ax
+    movw    $0x20,      %ax
     movw    %ax,        %ds
     movw    %ax,        %es
     movw    %ax,        %fs
     movw    %ax,        %gs
     movw    %ax,        %ss
-    jmp     $0x08,      $virtual_kernel
+    jmp     $0x18,      $virtual_kernel
 
 /*
  * Virtual kernel entry point.
@@ -101,14 +101,14 @@ virtual_gdt_desc:
 bootstrap_gdt:
     .long   0x0         /* Null gate */
     .long   0x0
-    .long   0x0000FFFF  /* Code selector with offset 0x40000000 */
-    .long   0x40CF9A00
-    .long   0x0000FFFF  /* Data selector with offset 0x40000000 */
-    .long   0x40CF9200
     .long   0x0000FFFF  /* Code selector without offset */
     .long   0x00CF9A00
     .long   0x0000FFFF  /* Data selector without offset */
     .long   0x00CF9200
+    .long   0x0000FFFF  /* Code selector with offset 0x40000000 */
+    .long   0x40CF9A00
+    .long   0x0000FFFF  /* Data selector with offset 0x40000000 */
+    .long   0x40CF9200
 bootstrap_gdt_end:
 
     .align  4
