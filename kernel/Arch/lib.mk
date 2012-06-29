@@ -10,7 +10,6 @@ $(OUTPUT)/Arch/$(ARCH)/realmodecode.o: $(OUTPUT)/Arch/$(ARCH)/empty.o $(OUTPUT)/
 
 $(OUTPUT)/Arch/$(ARCH)/realmodecode.bin: $(OUTPUT)/Arch/$(ARCH)/relocable-code.o
 	$(QLD) $(LDFLAGS) -e do_bios_call_rm -Ttext 0x2000 $< --oformat binary -o $@
-	@echo -e "\tRM\t $^"; $(RM) -rf $^
 
 $(OUTPUT)/Arch/$(ARCH)/relocable-code.o: Arch/$(ARCH)/realmodecode.S
 	$(SMART_MKDIR)
