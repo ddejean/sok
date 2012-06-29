@@ -15,28 +15,28 @@ BuddyAllocator::BuddyAllocator(struct freeblock *freeAreas,
                                uint32_t capacities,
                                char *heap,
                                uint32_t heapSize):
-        _freeAreas(freeAreas),
-        _capacities(capacities),
-        _heap(heap),
-        _heapSize(heapSize)
+        mFreeAreas(freeAreas),
+        mCapacities(capacities),
+        mHeap(heap),
+        mHeapSize(heapSize)
 {
         uint32_t i;
 
         /* Clear all chunk links */
-        for(i = 0; i < _capacities - 1; i++) {
+        for(i = 0; i < mCapacities - 1; i++) {
                 freeAreas[i].next = (struct freeblock*) NULL;
         }
 
         /* Declare all heap memory as one BIG chunk */
         memset(heap, 0, heapSize);
-        freeAreas[_capacities - 1].next = (struct freeblock*) _heap;
-        freeAreas[_capacities - 1].next->next = (struct freeblock*) NULL;
+        freeAreas[mCapacities - 1].next = (struct freeblock*) mHeap;
+        freeAreas[mCapacities - 1].next->next = (struct freeblock*) NULL;
 
 }
 
 uint32_t BuddyAllocator::heapSize(void)
 {
-    return _heapSize;
+    return mHeapSize;
 }
 
 /**
@@ -71,28 +71,28 @@ void* BuddyAllocator::alloc(size_t size)
     power = sizePower;
 
 	/* Heap is too small */
-	if (sizePower > _capacities) {
+	if (sizePower > mCapacities) {
 		return NULL;
 	}
 
         /* Look for the first fitting area */
-	while (_freeAreas[power-1].next == NULL){
+	while (mFreeAreas[power-1].next == NULL){
 		power++;
-		if (power > _capacities) {
+		if (power > mCapacities) {
 		        return NULL;
 		}
 	}
 
 	/* Get the free chunk */
-	freeArea = _freeAreas[power-1].next;
-	_freeAreas[power-1].next = _freeAreas[power-1].next->next;
+	freeArea = mFreeAreas[power-1].next;
+	mFreeAreas[power-1].next = mFreeAreas[power-1].next->next;
 
     /* Split the chunk in buddies if needed */
 	while (power > sizePower) {
 		buddyArea = freeArea + ((1 << (power-1))/sizeof(struct freeblock));
                 assert(buddyArea != NULL);
-		buddyArea->next = _freeAreas[power-2].next;
-		_freeAreas[power-2].next = buddyArea;
+		buddyArea->next = mFreeAreas[power-2].next;
+		mFreeAreas[power-2].next = buddyArea;
 		power--;
 	}
 
@@ -102,7 +102,7 @@ void* BuddyAllocator::alloc(size_t size)
 
 void *BuddyAllocator::myBuddyAddress(void *me, size_t mySize)
 {
-        return (void*) ((((uint64_t)me - (uint64_t)_heap)^(uint64_t)mySize) + (uint64_t)_heap);
+        return (void*) ((((uint64_t)me - (uint64_t)mHeap)^(uint64_t)mySize) + (uint64_t)mHeap);
 }
 
 void BuddyAllocator::free(void *chunk, size_t size)
@@ -125,7 +125,7 @@ void BuddyAllocator::free(void *chunk, size_t size)
 	matchingBuddy = (struct freeblock *) myBuddyAddress(chunk, size);
     assert(matchingBuddy != NULL);
 
-	potentialBuddy = &(_freeAreas[power-1]);
+	potentialBuddy = &(mFreeAreas[power-1]);
 
 	while (potentialBuddy != NULL && potentialBuddy->next != NULL) {
 		if (potentialBuddy->next == matchingBuddy) {
@@ -134,7 +134,7 @@ void BuddyAllocator::free(void *chunk, size_t size)
 			chunk = (matchingBuddy < (struct freeblock*) chunk) ? (void*) matchingBuddy : chunk;
 
 			/* Look for a bigger buddy */
-            potentialBuddy = &(_freeAreas[power]);
+            potentialBuddy = &(mFreeAreas[power]);
 			power++;
 
 			/* New buddy address */
@@ -146,7 +146,7 @@ void BuddyAllocator::free(void *chunk, size_t size)
 	}
 
 	/* Finally chain the buddy */
-	((struct freeblock*) chunk)->next = _freeAreas[power-1].next;
-	_freeAreas[power-1].next = (struct freeblock*) chunk;
+	((struct freeblock*) chunk)->next = mFreeAreas[power-1].next;
+	mFreeAreas[power-1].next = (struct freeblock*) chunk;
 }
 

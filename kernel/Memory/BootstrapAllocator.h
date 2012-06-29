@@ -19,7 +19,7 @@
 class BootstrapAllocator: public BuddyAllocator {
         private:
                 /* Singleton implementation */
-                static BootstrapAllocator *_instance;
+                static BootstrapAllocator *mInstance;
                 BootstrapAllocator();
                 void* operator new(size_t);
 

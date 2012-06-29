@@ -9,9 +9,9 @@
 
 class TestBuddyAllocator: public CxxTest::TestSuite {
 private:
-   struct freeblock _TZL[MAX_INDEX];
-   char _memHeap[1 << MAX_INDEX];
-   BuddyAllocator* _allocator;
+   struct freeblock mTZL[MAX_INDEX];
+   char mMemHeap[1 << MAX_INDEX];
+   BuddyAllocator* mAllocator;
 
 public:
 	void setUp(void);

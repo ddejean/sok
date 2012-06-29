@@ -19,12 +19,12 @@ struct freeblock {
 class BuddyAllocator {
         private:
                 /* Free area management */
-                struct freeblock *_freeAreas;
-                uint32_t _capacities;
+                struct freeblock *mFreeAreas;
+                uint32_t mCapacities;
 
                 /*  Memory heap */
-                char *_heap;
-                uint32_t _heapSize;
+                char *mHeap;
+                uint32_t mHeapSize;
 
                 /* Find the address of my buddy chunk */
                 void *myBuddyAddress(void *me, size_t mySize);
