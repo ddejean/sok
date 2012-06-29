@@ -56,8 +56,6 @@ BootstrapAllocator* BootstrapAllocator::getInstance(void)
 
 void BootstrapAllocator::reset(void)
 {
-       memset(memoryHeap, BOOTSTRAP_HEAP_SIZE, 0);
-       memset(freeAreas, BOOTSTRAP_POWER, sizeof(struct freeblock));
        _instance =  new BootstrapAllocator();
 }
 

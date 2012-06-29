@@ -7,6 +7,7 @@
 
 #include "stdint.h"
 #include "stdio.h"
+#include "string.h"
 #include "assert.h"
 #include "BuddyAllocator.h"
 
@@ -27,6 +28,7 @@ BuddyAllocator::BuddyAllocator(struct freeblock *freeAreas,
         }
 
         /* Declare all heap memory as one BIG chunk */
+        memset(heap, 0, heapSize);
         freeAreas[_capacities - 1].next = (struct freeblock*) _heap;
         freeAreas[_capacities - 1].next->next = (struct freeblock*) NULL;
 
@@ -85,7 +87,7 @@ void* BuddyAllocator::alloc(size_t size)
 	freeArea = _freeAreas[power-1].next;
 	_freeAreas[power-1].next = _freeAreas[power-1].next->next;
 
-        /* Split the chunk in buddies if needed */
+    /* Split the chunk in buddies if needed */
 	while (power > sizePower) {
 		buddyArea = freeArea + ((1 << (power-1))/sizeof(struct freeblock));
                 assert(buddyArea != NULL);
