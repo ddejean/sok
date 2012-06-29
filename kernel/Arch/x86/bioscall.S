@@ -70,7 +70,7 @@ real_code:
 	pushl	%edx
 	pushl	%ecx
     movl    $0x2000,%eax
-	call	%eax
+	call	*(%eax)
 	addl	$8,     %esp
 
 	/* Restore the kernel IDT and GDT and segment registers. */
