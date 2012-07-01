@@ -3,23 +3,16 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
-#ifndef MAX_STACK_TRACE_DEPTH
-#define MAX_STACK_TRACE_DEPTH 15
-#endif
-
-static void *backtrace_buffer[MAX_STACK_TRACE_DEPTH];
-
-__inline__ static void hlt(void)
-{
-	__asm__ __volatile__("hlt");
-}
+static void *backtrace_buffer[32];
 
 void panic(const char *fmt, ...)
 {
         va_list args;
-        int i;
+        int i, entries;
         void *addr;
+        char **symbols;
 
         /* Print user message */
         va_start(args, fmt);
@@ -27,22 +20,17 @@ void panic(const char *fmt, ...)
         va_end(args);
 
         /* Get the stack trace */
-        memset(backtrace_buffer, 0, MAX_STACK_TRACE_DEPTH * sizeof(void *));
-        backtrace(backtrace_buffer, MAX_STACK_TRACE_DEPTH);
+        memset(backtrace_buffer, 0, 32 * sizeof(void *));
+        entries = backtrace(backtrace_buffer, 32);
+        symbols = backtrace_symbols(backtrace_buffer, entries);
 
         /* Print the stack trace */
-        printf("\nstack trace:");
-        for (i = 0; i < MAX_STACK_TRACE_DEPTH; ++i) {
-                if (!(addr = backtrace_buffer[i])) {
-                        break;
-                }
-                printf(" %3d: %08x\n", i, (uintptr_t) addr);
+        printf("\nStack trace:\n");
+        for (i = 0; i < entries; ++i) {
+                addr = backtrace_buffer[i];
+                printf(" %3d: %s(%08x)\n", i, symbols[i], (uintptr_t) addr);
         }
-
-        /* Stop here... */
-        while (1) {
-                hlt();
-        }
+        assert(0 && "Failure. Stop here.");
 }
 
 
