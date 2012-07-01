@@ -7,6 +7,11 @@ void TestBootstrapAllocator::setUp(void)
     BootstrapAllocator::reset();
 }
 
+void TestBootstrapAllocator::tearDown(void)
+{
+    BootstrapAllocator::reset();
+}
+
 void TestBootstrapAllocator::testSingleton(void)
 {
     BootstrapAllocator *a1, *a2;

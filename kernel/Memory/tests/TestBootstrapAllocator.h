@@ -7,6 +7,7 @@
 class TestBootstrapAllocator: public CxxTest::TestSuite {
     public:
         void setUp(void);
+        void tearDown(void);
 
         void testSingleton(void);
         void testReset(void);
