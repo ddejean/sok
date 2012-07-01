@@ -1,0 +1,5 @@
+-nostdlibinc
+-nobuiltininc
+-nostdinc
+-I./
+-Ilib/
