@@ -79,3 +79,17 @@ const char *multiboot_cmdline_args(void)
         }
 }
 
+uint32_t multiboot_mem_upper_address(void)
+{
+        if ((mb_info.flags & MULTIBOOT_INFO_MEMORY) == MULTIBOOT_INFO_MEMORY) {
+                uint32_t upper_address;
+                /* Multiboot gives us the upper memory hole, in KB,
+                 * minus 1 MB. */
+                upper_address = mb_info.mem_upper + 1024u;
+                /* Return a byte based address */
+                return upper_address * 1024;
+        } else {
+                return 0xFFFFFFFFu;
+        }
+}
+

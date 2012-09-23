@@ -254,5 +254,11 @@ const char *multiboot_bootloader_name(void);
  */
 const char *multiboot_cmdline_args(void);
 
+/**
+ * Provides the maximum upper addres of hardware memory.
+ *
+ * @return the upper address of physical memory in bytes.
+ */
+uint32_t multiboot_mem_upper_address(void);
 #endif /* ! MULTIBOOT_HEADER */
 

@@ -14,7 +14,9 @@
 extern "C" {
 #endif
 
-void kernel_main(int argc, char **argv);
+#include "Arch/boot-context.h"
+
+void kernel_main(struct boot_context *context, int argc, char **argv);
 
 #ifdef __cplusplus
 }

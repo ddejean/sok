@@ -98,6 +98,7 @@ virtual_gdt_desc:
     .long   bootstrap_gdt
 
     .align 4
+    .global bootstrap_gdt
 bootstrap_gdt:
     .long   0x0         /* Null gate */
     .long   0x0
@@ -109,6 +110,7 @@ bootstrap_gdt:
     .long   0x40CF9A00
     .long   0x0000FFFF  /* Data selector with offset 0x40000000 */
     .long   0x40CF9200
+    .global bootstrap_gdt_end
 bootstrap_gdt_end:
 
     .align  4

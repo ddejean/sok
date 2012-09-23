@@ -15,13 +15,14 @@ extern "C" {
 #include "kernel.h"
 #include "Memory/BootstrapAllocator.h"
 
-void kernel_main(int argc, char **argv)
+
+void kernel_main(struct boot_context *context, int argc, char **argv)
 {
+        (void)context;
         (void)argc;
         (void)argv;
 
-        printf("%s", "Running stage 2 ...\n");
-
+        printf("%s\n", "Running stage 2 ...");
         BootstrapAllocator *ba = BootstrapAllocator::getInstance();
         (void)ba;
 

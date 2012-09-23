@@ -57,4 +57,5 @@ SECTIONS
         *(COMMON)
         _bss_end = .;
     }
+    _kernel_end = .;
 }

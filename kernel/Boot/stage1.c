@@ -22,6 +22,7 @@
 #include "bootstrap.h"
 #include "putbytes.h"
 #include "kernel.h"
+#include "boot-info.h"
 
 #ifdef QEMU_DEBUG
 #include "qemu.h"
@@ -113,6 +114,7 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
         int i;
         int argc;
         char **argv;
+        struct boot_context *context;
 
         /* Prepare a simple debug display */
         stage1_setup_display();
@@ -146,14 +148,16 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
                 printf("\n");
         }
 
+        /* Build stage1 info structure */
+        context = boot_info_fill();
+
         /* Call constructors list */
         stage1_call_tors(_ctors_start, _ctors_end);
 
         /* Call C++ kernel */
-        kernel_main(argc, argv);
+        kernel_main(context, argc, argv);
 
         /* Call destructors */
         stage1_call_tors(_dtors_start, _dtors_end);
-
 }
 
