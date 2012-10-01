@@ -34,6 +34,8 @@ BuddyAllocator::BuddyAllocator(struct freeblock *freeAreas,
 
 }
 
+BuddyAllocator::~BuddyAllocator() {/* Empty destructor to avoid undefined behaviors */}
+
 uint32_t BuddyAllocator::heapSize(void)
 {
     return mHeapSize;

@@ -22,6 +22,7 @@ class BootstrapAllocator: public BuddyAllocator {
                 static BootstrapAllocator *mInstance;
                 BootstrapAllocator();
                 void* operator new(size_t);
+                void  operator delete(void *);
 
         public:
                 /*

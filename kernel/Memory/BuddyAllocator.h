@@ -10,13 +10,14 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <Memory/Allocator.h>
 
 /* Free block: self contained link to the next one ! */
 struct freeblock {
         struct freeblock *next;
 };
 
-class BuddyAllocator {
+class BuddyAllocator: public Allocator {
         private:
                 /* Free area management */
                 struct freeblock *mFreeAreas;
@@ -34,6 +35,8 @@ class BuddyAllocator {
                                uint32_t capacities,             /* Number of free area sizes */
                                char *heap,
                                uint32_t heapSize);
+
+                virtual ~BuddyAllocator();
 
                 /* Allocator implementation */
                 void *alloc(size_t size);

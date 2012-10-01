@@ -44,6 +44,8 @@ void* BootstrapAllocator::operator new(size_t size)
         return (void*) &allocator;
 }
 
+void BootstrapAllocator::operator delete(void *) {};
+
 BootstrapAllocator* BootstrapAllocator::mInstance = (BootstrapAllocator*) NULL;
 
 BootstrapAllocator* BootstrapAllocator::getInstance(void)

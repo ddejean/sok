@@ -12,20 +12,36 @@ extern "C" {
 #endif
 
 #include "stdio.h"
+#include "assert.h"
 #include "kernel.h"
-#include "Memory/BootstrapAllocator.h"
+#include "System.h"
 
 
 void kernel_main(struct boot_context *context, int argc, char **argv)
 {
-        (void)context;
+        System *system = NULL;
         (void)argc;
         (void)argv;
 
         printf("%s\n", "Running stage 2 ...");
-        BootstrapAllocator *ba = BootstrapAllocator::getInstance();
-        (void)ba;
 
+        system = System::getInstance();
+        assert(system != NULL);
+
+        /* Ensure the system has a minimal initialization:
+         *  - CPU is ready to be manipulated
+         *  - We have a first step allocator
+         */
+        system->init(context);
+
+        /*
+         * From this point we're uder the aegis of the BootstrapAllocator, be
+         * cautious with memory.
+         */
+        assert(system->getAllocator() != NULL);
+
+        /* Now we're using the real, dynamic, full featured allocator */
+        //TODO
 }
 
 
