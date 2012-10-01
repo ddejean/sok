@@ -12,9 +12,15 @@ define LIBRARY_BUILD =
 LOCAL_INCLUDES :=
 LOCAL_CFLAGS :=
 LOCAL_CXXFLAGS :=
+LOCAL_TEST_CFLAGS :=
+LOCAL_TEST_CXXFLAGS :=
+LOCAL_TEST_LDFLAGS :=
 
 # Import local library stuff
 -include $(1)/lib.mk
+
+LOCAL_TEST_CFLAGS += $(CFLAGS)
+LOCAL_TEST_CXXFLAGS += $(CXXFLAGS)
 
 # Library dependencies
 $(1)_FILES := $$(call all-compilables-under, $(1)) $$(call all-compilables-under, $(1)/$(ARCH))
@@ -27,6 +33,8 @@ ifneq "$$(OUTPUT)" ""
 endif
 
 # Library target
+# Ensure compilation flags will be affected by local options only for this
+# library
 $$(OUTPUT)/lib$(1).a: INCLUDES += $$(LOCAL_INCLUDES)
 $$(OUTPUT)/lib$(1).a: KERNEL_CFLAGS += $$(LOCAL_CFLAGS)
 $$(OUTPUT)/lib$(1).a: KERNEL_CXXFLAGS += $$(LOCAL_CXXFLAGS)
@@ -55,16 +63,16 @@ $$(OUTPUT)/$(1)/test$(1): $$(OUTPUT)/$(1)/tests/test$(1).o $$(OUTPUT)/lib$(1).a 
 
 # Test binary generation and compilation
 $$(OUTPUT)/$(1)/tests/test$(1).o: $$(OUTPUT)/$(1)/tests/test$(1).cpp
-	$$(QCPP) $$(CXXFLAGS) -I. -c $$< -o $$@
+	$$(QCPP) $$(LOCAL_TEST_CXXFLAGS) -I. -c $$< -o $$@
 
 $$(OUTPUT)/$(1)/tests/test$(1).cpp: $$($(1)_TEST_FILES)
 	$$(QTESTGEN) -o $$@ --error-printer $(1)/tests/*.h
 
 $$(OUTPUT)/$(1)/tests/%.o: $(1)/tests/%.cpp
-	$$(QCPP) $$(CXXFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
+	$$(QCPP) $$(LOCAL_TEST_CXXFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
 
 $$(OUTPUT)/$(1)/tests/%.o: $(1)/tests/%.c
-	$$(QCC) $$(CFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
+	$$(QCC) $$(LOCAL_TEST_CFLAGS) -I. -I$(1)/tests/ -ICxxTest/ -c $$< -o $$@
 
 else
 
