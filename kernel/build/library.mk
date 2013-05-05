@@ -8,7 +8,7 @@
 # and all compilable files under.
 define LIBRARY_BUILD =
 
-# Clear local libray definitions
+# Clear local library definitions
 LOCAL_INCLUDES :=
 LOCAL_CFLAGS :=
 LOCAL_CXXFLAGS :=

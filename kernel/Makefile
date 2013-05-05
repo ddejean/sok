@@ -61,7 +61,12 @@ MAIN_OBJS 	:= $(addprefix $(OUTPUT)/, $(call objetize-compilables, $(MAIN_FILES)
 MAIN_DEPS	:= $(addprefix $(OUTPUT)/, $(call generate-dependencies, $(MAIN_FILES)))
 
 # Library builds
-LIBRARY_NAMES 	:= Boot Arch Memory Runtime CUtils # CUtils must be last for link dependency purposes
+LIBRARY_NAMES   := Boot \
+                   Arch \
+                   Memory \
+                   Utils \
+                   Runtime \
+                   CUtils # CUtils must be last for link dependency purposes
 LIBRARY_FILES	:= $(call dirs-to-libs, $(LIBRARY_NAMES))
 LIBRARIES_OUT 	:= $(addprefix $(OUTPUT)/, $(LIBRARY_FILES))
 KERNEL_LDFLAGS	+= -L$(OUTPUT)
