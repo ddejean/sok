@@ -1,8 +1,8 @@
 /*
  * System.h
  *
- * Copyright (C) 2012 Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright (C) 2012-2013 Simple Object Kernel project
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * Basic System manager. This class acts as a system server, providing a way
  * to drive kernel basic but mandatory initialization steps. For example:
@@ -18,9 +18,12 @@ class System {
     private:
         /** Singleton instance. */
         static System *mInstance;
-        
+
         /** The System instance is allocated into BootstrapAllocator. */
         void* operator new(size_t);
+
+        /** Keep the boot context for later initialisation. */
+        struct boot_context *mBootContext;
 
         /** Instance of the current allocator used by the whole system. */
         Allocator *mAllocator;
@@ -35,22 +38,24 @@ class System {
         static System *getInstance(void);
 
         /**
+         * Provide the boot context to the system manager.
+         * @param context a reference on the boot context.
+         */
+        void injectBootContext(struct boot_context *context);
+
+        /**
          * Basic system initialization:
          *  - Prepare CPU minimal tables
          *  - Choose an allocator for the current session.
          * Assert if something goes wrong.
          *
-         * @param context the arch dependant context provided by previous
-         *           stage. Never NULL, there's always some information to
-         *           get from the previous boot sequences.
-         *
-         * @pre setContext() must have been called before.
+         * @pre injectBootContext() must have been called before.
          */
-        bool init(struct boot_context *context);
+        bool bootstrapSystem(void);
 
         /**
          * Provides the allocator for the current system state. This allocator
-         * may change may change during boot untilit reaches the kernel full
+         * may change may change during boot until it reaches the kernel full
          * featured allocator.
          *
          * @return the instance of the allocator for the current boot stage.

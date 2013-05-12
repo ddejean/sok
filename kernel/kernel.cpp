@@ -1,8 +1,8 @@
 /*
  * kernel.cpp
  *
- * Copyright (C) 2012 Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright (C) 2012-2013 Simple Object Kernel project
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * C++ kernel entry point.
  */
@@ -27,21 +27,10 @@ void kernel_main(struct boot_context *context, int argc, char **argv)
 
         system = System::getInstance();
         assert(system != NULL);
+        system->injectBootContext(context);
 
-        /* Ensure the system has a minimal initialization:
-         *  - CPU is ready to be manipulated
-         *  - We have a first step allocator
-         */
-        system->init(context);
-
-        /*
-         * From this point we're uder the aegis of the BootstrapAllocator, be
-         * cautious with memory.
-         */
-        assert(system->getAllocator() != NULL);
-
-        /* Now we're using the real, dynamic, full featured allocator */
-        //TODO
+        /* Bootstrap:  */
+        system->bootstrapSystem();
 }
 
 
