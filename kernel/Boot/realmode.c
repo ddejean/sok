@@ -1,8 +1,8 @@
 /*
  * realmode.h 
  *
- * Copyright (C) 2012 Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright (C) 2012-2013 Simple Object Kernel project
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * Real mode setup implementation.
  */
@@ -24,7 +24,7 @@ void realmode_setup(void)
         char *code_location;
         size_t code_size;
 
-        code_location = (char*)(KERNEL_BASE + 0x2000);
+        code_location = (char*)0x2000;
         code_size = (size_t)(_real_mode_end - _real_mode_start);
 
         memcpy(code_location,  (char*)_real_mode_start, code_size);

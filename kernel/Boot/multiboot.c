@@ -1,8 +1,8 @@
 /*
  * multiboot.c
  *
- * Copyright (C) 2012 - Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright (C) 2012-2013 - Simple Object Kernel project
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * Multiboot utils implementation.
  * @see http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
@@ -23,9 +23,6 @@ static multiboot_info_t mb_info;
 static char bootloader_name[256];
 static char cmdline_args[1024];
 
-/* Local addresses translation macro */
-#define PHY_TO_VIRT(add)        ((add) + KERNEL_BASE)
-
 /*
  * Multiboot interface implementation.
  */
@@ -36,26 +33,20 @@ int multiboot_check(uint32_t magic)
 
 void multiboot_save(multiboot_info_t *mb)
 {
-        /* Check we have a virtual adress */
-        if (((uint32_t)mb & KERNEL_BASE) != KERNEL_BASE) {
-                printf("%s\n", "multiboot: multiboot_info_t pointer is not a valid virtual address");
-                return;
-        }
-
         /* Save the main structure */
         memcpy(&mb_info, mb, sizeof(multiboot_info_t));
 
         /* Bootloader name */
         if ((mb_info.flags & MULTIBOOT_INFO_BOOT_LOADER_NAME)
             == MULTIBOOT_INFO_BOOT_LOADER_NAME) {
-                strncpy(bootloader_name, (const char *)PHY_TO_VIRT(mb_info.boot_loader_name), 256);
+                strncpy(bootloader_name, (const char *)mb_info.boot_loader_name, 256);
         } else {
                 bootloader_name[0] = '\0';
         }
 
         /* Command line arguments */
         if ((mb_info.flags & MULTIBOOT_INFO_CMDLINE) == MULTIBOOT_INFO_CMDLINE) {
-                strncpy(cmdline_args, (const char *)PHY_TO_VIRT(mb_info.cmdline), 1024);
+                strncpy(cmdline_args, (const char *)mb_info.cmdline, 1024);
         } else {
                 cmdline_args[0] = '\0';
         }

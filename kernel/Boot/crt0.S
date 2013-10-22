@@ -1,15 +1,13 @@
 /*
- * Copyright (C) 2012, the Simple Object Kernel project.
+ * Copyright (C) 2012-2013, the Simple Object Kernel project.
  *
- * crt0.s Assembly bootstrap for x86 targets
- * by Damien Dejean <djod4556@yahoo.fr>
+ * crt0.S Assembly bootstrap for x86 targets
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * This kernel entry point expect to be loaded by a multiboot compliant
  * bootloader like GRUB.
  *
  * Requirements:
- * - Set up a virtual address space to allow the kernel to use 3 GB based
- *   virtual addresses
  * - Set up a primary stack
  * - The kernel must block in a fashion and power efficient way if the call
  *   to stage1_main returns.
@@ -29,11 +27,11 @@ multiboot_header:
     .long    0x1BADB002                          /* Multiboot magic */
     .long    0x00010003                          /* Multiboot flags: what we want to know from the loader */
     .long    -0x1BADB002-0x00010003              /* Checksum */
-    .long    multiboot_header - 0xC0000000       /* Multiboot structure adress */
-    .long    _start - 0xC0000000                 /* Start of kernel binary in memory */
-    .long    _data_end - 0xC0000000              /* End of data to load */
-    .long    _bss_end - 0xC0000000               /* End of BSS section, erased by loader */
-    .long    entry - 0xC0000000                  /* Address of the kernel entry point */
+    .long    multiboot_header                    /* Multiboot structure adress */
+    .long    _start                              /* Start of kernel binary in memory */
+    .long    _data_end                           /* End of data to load */
+    .long    _bss_end                            /* End of BSS section, erased by loader */
+    .long    entry                               /* Address of the kernel entry point */
 
 /*
  * Entry point of the kernel
@@ -44,19 +42,18 @@ entry:
     cli
 
     /* Save multiboot informations */
-    movl    %eax,           multiboot_magic - 0xC0000000
-    addl    $0xC0000000,    %ebx
-    movl    %ebx,           multiboot_info - 0xC0000000
+    movl    %eax,           multiboot_magic
+    movl    %ebx,           multiboot_info
 
     /* Load the tricky GDT */
-    lgdtl   gdt_desc - 0xC0000000
-    movw    $0x20,      %ax
+    lgdtl   gdt_desc
+    movw    $0x10,      %ax
     movw    %ax,        %ds
     movw    %ax,        %es
     movw    %ax,        %fs
     movw    %ax,        %gs
     movw    %ax,        %ss
-    jmp     $0x18,      $virtual_kernel
+    jmp     $0x8,       $virtual_kernel
 
 /*
  * Virtual kernel entry point.
@@ -90,11 +87,6 @@ virtual_kernel:
     .align  4
 gdt_desc:
     .word   bootstrap_gdt_end - bootstrap_gdt - 1
-    .long   bootstrap_gdt - 0xC0000000
-
-    .align  4
-virtual_gdt_desc:
-    .word   bootstrap_gdt_end - bootstrap_gdt - 1
     .long   bootstrap_gdt
 
     .align 4
@@ -106,10 +98,6 @@ bootstrap_gdt:
     .long   0x00CF9A00
     .long   0x0000FFFF  /* Data selector without offset */
     .long   0x00CF9200
-    .long   0x0000FFFF  /* Code selector with offset 0x40000000 */
-    .long   0x40CF9A00
-    .long   0x0000FFFF  /* Data selector with offset 0x40000000 */
-    .long   0x40CF9200
     .global bootstrap_gdt_end
 bootstrap_gdt_end:
 

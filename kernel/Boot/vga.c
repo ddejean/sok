@@ -1,8 +1,8 @@
 /*
  * vga.c
  *
- * Copyright (C) 2012 Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright (C) 2012-2013 Simple Object Kernel project
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * VGA screen implementation.
  * The IBM-PC VGA screen is a 80*25 framebuffer where it is possible to print
@@ -20,7 +20,6 @@
 
 /* Hardware location of the char framebuffer */
 #define VGA_BASE        0xB8000
-#define VGA_BUFFER      (VGA_BASE + KERNEL_BASE)
 
 /* VGA constants */
 #define VGA_WIDTH       80
@@ -34,7 +33,7 @@
 
 
 /* Screen parameters */
-static char *screen = (char*)VGA_BUFFER;
+static char *screen = (char*)VGA_BASE;
 static const char color = 0x0F;  /* White fg, black bg */
 static uint8_t x;
 static uint8_t y;
@@ -64,7 +63,7 @@ static void vga_scroll(void)
         char *pos = screen;
 	size_t size = (VGA_HEIGHT - 1) * VGA_WIDTH * VGA_CHAR_SIZE;
 
-	memmove((char*)VGA_BUFFER, (char*)(VGA_BUFFER + (VGA_WIDTH * VGA_CHAR_SIZE)), size);
+	memmove((char*)VGA_BASE, (char*)(VGA_BASE + (VGA_WIDTH * VGA_CHAR_SIZE)), size);
 	y = VGA_HEIGHT - 1;
 	x = 0;
 	for (i = 0; i < VGA_WIDTH; i++) {
@@ -72,7 +71,7 @@ static void vga_scroll(void)
 		*(pos++) = color;
 	}
 	vga_set_cursor(x, y);
-	screen = (char*)(VGA_BUFFER + VGA_BUFFER_SIZE - (VGA_WIDTH * VGA_CHAR_SIZE));
+	screen = (char*)(VGA_BASE + VGA_BUFFER_SIZE - (VGA_WIDTH * VGA_CHAR_SIZE));
 }
 
 /**
@@ -145,7 +144,7 @@ static void vga_clear(void)
         for (i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
                 vga_putchar(' ');
         } 
-        screen = (char*)VGA_BUFFER;
+        screen = (char*)VGA_BASE;
         x = 0;
         y = 0;
         /* Reset the cursor */

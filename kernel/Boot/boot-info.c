@@ -22,7 +22,7 @@ struct boot_context *boot_info_fill(void) {
         info.magic = STAGE1_MAGIC;
         info.bootstrap_gdt = (void*)bootstrap_gdt;
         info.gdt_length = (int)(bootstrap_gdt_end - bootstrap_gdt);
-        info.memory_start = (void*)(_kernel_end - KERNEL_BASE);
+        info.memory_start = (void*)_kernel_end;
         info.memory_end = (void*) multiboot_mem_upper_address();
 
         return &info;

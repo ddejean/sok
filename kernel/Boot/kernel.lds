@@ -2,32 +2,29 @@
  * Simple Object Kernel
  * LD script to manage kernel location into memory.
  *
- * Copyright 2012 by Damien Dejean <djod4556@yahoo.fr>
+ * Copyright 2012-2013 by Damien Dejean <dam.dejean@gmail.com>
  */
-
-/* Higher-half kernel */
-kernel_offset = 0xC0000000;
 
 SECTIONS
 {
     /* Begining of the kernel */
-    . = 0x100000 + kernel_offset;
+    . = 0x100000;
     _start = .;
 
-    .text ALIGN(0x1000): AT(ADDR(.text) - kernel_offset) {
+    .text ALIGN(0x1000) : {
         */crt0.o(.text)
         *(.text)
         *(.gnu.linkonce.t*)
     }
 
-    .realmodecode : AT(ADDR(.realmodecode) - kernel_offset) {
+    .realmodecode : {
         /* Real mode code */
         _real_mode_start = .;
         *(.realmodecode)
         _real_mode_end = .;
     }
 
-    .rodata ALIGN(0x1000): AT(ADDR(.rodata) - kernel_offset) { 
+    .rodata ALIGN(0x1000) : {
 
         /* C++ constructors list */
         _ctors_start = .;
@@ -44,14 +41,14 @@ SECTIONS
         *(.gnu.linkonce.r*)
     }
 
-    .data ALIGN(0x1000): AT(ADDR(.data) - kernel_offset) {
+    .data ALIGN(0x1000) : {
         _data_start = .;
         *(.data)
         *(.gun.linkonce.d*)
         _data_end = .;
     }
 
-    .bss : AT(ADDR(.bss) - kernel_offset) {
+    .bss : {
         _bss_start = .;
         *(.bss)
         *(COMMON)
