@@ -10,14 +10,14 @@
 #ifndef _HARDWARE_MEMORY_MANAGER_H_
 #define _HARDWARE_MEMORY_MANAGER_H_
 
-#include "Utils/List.h"
+#include "FrameList.h"
 
 class FrameManager {
 private:
     /* Size of a physical frame for this manager. */
     unsigned mFrameSize;
     /* The list of free frames.*/
-    List<void*> *mFrameList;
+    FrameList *mFrameList;
     /* Memory boundaries */
     void *mStart;
     void *mEnd;

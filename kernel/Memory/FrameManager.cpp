@@ -9,7 +9,6 @@
 
 #include <assert.h>
 #include "FrameManager.h"
-#include "Utils/LinkedList.h"
 #include "Utils/Math.h"
 
 FrameManager::FrameManager(void *start, unsigned frameSize, unsigned areaSize)
@@ -30,7 +29,7 @@ FrameManager::FrameManager(void *start, unsigned frameSize, unsigned areaSize)
     mFrameSize = frameSize;
     mStart = start;
     mEnd = (void*)((unsigned)start + areaSize);
-    mFrameList = new LinkedList<void*>();
+    mFrameList = new FrameList();
     assert(mFrameList != NULL);
 
     /* Fill the list of free frames */
