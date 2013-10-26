@@ -40,17 +40,17 @@ void System::injectBootContext(struct boot_context *context)
 
 bool System::bootstrapSystem(void)
 {
-    unsigned memorySize;
-    unsigned memoryStart;
+    unsigned long memorySize;
+    unsigned long memoryStart;
 
     /* Define an allocator for early initializations */
     mAllocator = BootstrapAllocator::getInstance();
     assert(mAllocator != NULL);
 
-    memorySize = (unsigned)mBootContext->memory_end - (unsigned)mBootContext->memory_start;
-    memoryStart = ((unsigned)mBootContext->memory_start & 0xFFFFF000)
-        ? ((unsigned)mBootContext->memory_start & 0xFFFFF000) + (1 << 12)
-        : (unsigned)mBootContext->memory_start;
+    memorySize = (unsigned long)mBootContext->memory_end - (unsigned long)mBootContext->memory_start;
+    memoryStart = ((unsigned long)mBootContext->memory_start & 0xFFFFF000lu)
+        ? ((unsigned long)mBootContext->memory_start & 0xFFFFF000lu) + (1 << 12)
+        : (unsigned long)mBootContext->memory_start;
     FrameManager *fm = new FrameManager((void*)memoryStart,
             1 << 12,
             memorySize & 0xFFFFF000);

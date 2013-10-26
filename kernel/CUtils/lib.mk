@@ -1,1 +1,0 @@
-KERNEL_LDFLAGS += -lCUtils

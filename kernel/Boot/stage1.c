@@ -21,7 +21,7 @@
 #include "multiboot.h"
 #include "bootstrap.h"
 #include "putbytes.h"
-#include "kernel.h"
+#include "Kernel/Kernel.h"
 #include "boot-info.h"
 
 #ifdef QEMU_DEBUG

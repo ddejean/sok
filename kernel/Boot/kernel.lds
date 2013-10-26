@@ -5,14 +5,16 @@
  * Copyright 2012-2013 by Damien Dejean <dam.dejean@gmail.com>
  */
 
+ENTRY(entry);
+
 SECTIONS
 {
-    /* Begining of the kernel */
+    /* Begining of the kernel at 1MB */
     . = 0x100000;
     _start = .;
 
     .text ALIGN(0x1000) : {
-        */crt0.o(.text)
+        *crt0.o(.text)
         *(.text)
         *(.gnu.linkonce.t*)
     }

@@ -2,18 +2,9 @@
 # Simple Object Kernel project Makefile                                       #
 # Copyright 2013 - Damien Dejean <dam.dejean@gmail.com>                       #
 #                                                                             #
-# Mostly inspirated from Android Build System.                                #
+# A C++ standard library build.                                               #
 ###############################################################################
 
-# Define toolchain location
-BUILD_ROOT:=build
+LOCAL_PATH := $(call my-dir)
 
-# Define toolchain output
-BUILD_OUTPUT:=out
-
-# Import the toolchain
-include $(BUILD_ROOT)/main.mk
-
-# Import submakefile chain
-include kernel/Sok.mk
-
+# Something to do when we'll support tests

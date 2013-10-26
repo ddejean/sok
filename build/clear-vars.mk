@@ -2,18 +2,18 @@
 # Simple Object Kernel project Makefile                                       #
 # Copyright 2013 - Damien Dejean <dam.dejean@gmail.com>                       #
 #                                                                             #
-# Mostly inspirated from Android Build System.                                #
+# Clear module variables.                                                     #
 ###############################################################################
 
-# Define toolchain location
-BUILD_ROOT:=build
-
-# Define toolchain output
-BUILD_OUTPUT:=out
-
-# Import the toolchain
-include $(BUILD_ROOT)/main.mk
-
-# Import submakefile chain
-include kernel/Sok.mk
+LOCAL_MODULE:=
+LOCAL_MODULE_CLASS:=
+LOCAL_SRC_FILES:=
+LOCAL_TESTS_FILES:=
+LOCAL_DEPENDENCIES:=
+LOCAL_STATIC_LIBRARY:=
+LOCAL_CFLAGS:=
+LOCAL_CXXFLAGS:=
+LOCAL_ASFLAGS:=
+LOCAL_LDFLAGS:=
+LOCAL_ARFLAGS:=
 

@@ -13,7 +13,7 @@ extern "C" {
 
 #include "stdio.h"
 #include "assert.h"
-#include "kernel.h"
+#include "Kernel.h"
 #include "System.h"
 
 

@@ -2,18 +2,16 @@
 # Simple Object Kernel project Makefile                                       #
 # Copyright 2013 - Damien Dejean <dam.dejean@gmail.com>                       #
 #                                                                             #
-# Mostly inspirated from Android Build System.                                #
+# Build Kernel library modules.                                               #
 ###############################################################################
 
-# Define toolchain location
-BUILD_ROOT:=build
+# Cannot be called LOCAL_PATH as overrided by submakefiles
+MY_DIR := $(call my-dir)
 
-# Define toolchain output
-BUILD_OUTPUT:=out
-
-# Import the toolchain
-include $(BUILD_ROOT)/main.mk
-
-# Import submakefile chain
-include kernel/Sok.mk
-
+include $(MY_DIR)/CUtils/Sok.mk
+include $(MY_DIR)/Arch/Sok.mk
+include $(MY_DIR)/Boot/Sok.mk
+include $(MY_DIR)/Utils/Sok.mk
+include $(MY_DIR)/Runtime/Sok.mk
+include $(MY_DIR)/Memory/Sok.mk
+include $(MY_DIR)/Kernel/Sok.mk

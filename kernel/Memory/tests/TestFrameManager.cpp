@@ -32,7 +32,7 @@ void TestFrameManager::testFrameRetain(void)
     }
 
     TS_ASSERT_EQUALS((void*)0, mFrameManager->frameRetain());
-    TS_ASSERT_EQUALS(0, mFrameManager->count());
+    TS_ASSERT_EQUALS(0u, mFrameManager->count());
 }
 
 void TestFrameManager::testFrameRelease(void)
@@ -46,12 +46,12 @@ void TestFrameManager::testFrameRelease(void)
     }
 
     TS_ASSERT_EQUALS((void*)0, mFrameManager->frameRetain());
-    TS_ASSERT_EQUALS(0, mFrameManager->count());
+    TS_ASSERT_EQUALS(0u, mFrameManager->count());
 
     aFrame = frames[0];
     frames[0] = NULL;
     mFrameManager->frameRelease(aFrame);
-    TS_ASSERT_EQUALS(1, mFrameManager->count());
+    TS_ASSERT_EQUALS(1u, mFrameManager->count());
     frames[0] = mFrameManager->frameRetain();
     TS_ASSERT_EQUALS(aFrame, frames[0]);
 
