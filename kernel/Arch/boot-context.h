@@ -14,7 +14,6 @@ extern "C" {
 
 #define STAGE1_MAGIC    0xDEADC0DEu
 
-#if ARCH == x86
 /**
  * Collects information deduced during bootstrap sequence. Some helpers for
  * later initialisations.
@@ -27,12 +26,6 @@ struct boot_context {
                             // memory translation. Virtual address.
     int gdt_length;         // Length of the boostrap GDT.
 };
-
-#else
-/* Unable to compile if the arch is not defined. */
-#error ARCH macro have to be defined to get a viable "struct boot_context" definition.
-#endif
-
 
 /**
  * Checks that the provided struct is a boot_context structure.
