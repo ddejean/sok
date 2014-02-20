@@ -19,11 +19,8 @@ SECTIONS
         *(.gnu.linkonce.t*)
     }
 
-    .realmodecode : {
-        /* Real mode code */
-        _real_mode_start = .;
-        *(.realmodecode)
-        _real_mode_end = .;
+    .bootstrap_stack ALIGN(0x1000) : {
+        *(.bootstrap_stack)
     }
 
     .rodata ALIGN(0x1000) : {
@@ -50,7 +47,7 @@ SECTIONS
         _data_end = .;
     }
 
-    .bss : {
+    .bss ALIGN(0x1000) : {
         _bss_start = .;
         *(.bss)
         *(COMMON)

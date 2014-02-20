@@ -61,7 +61,7 @@ entry:
  */
 virtual_kernel:
     /* Setup the stack */
-    leal        first_stack,        %esp
+    leal        bootstrap_stack,    %esp
     addl        $16384,             %esp
     xorl        %ebp,               %ebp
 
@@ -101,6 +101,11 @@ bootstrap_gdt:
     .global bootstrap_gdt_end
 bootstrap_gdt_end:
 
+/*
+ * Special section for the first kernel stack. Allows to map code and rodata
+ * regions to read only and boostrap stack to read/write.
+ */
+.section bootstrap_stack
     .align  4
-first_stack:
+boostrap_stack:
     .fill   4096, 4, 0   /* Create a stack of 4096*4 bytes filled with 0s */
