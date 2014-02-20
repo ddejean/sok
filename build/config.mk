@@ -24,12 +24,16 @@ BUILD_TEST := $(BUILD_ROOT)/build-tests.mk
 BUILD_EXECUTABLE := $(BUILD_ROOT)/build-executable.mk
 
 # Default build flags
-DEFAULT_FLAGS := -m32 -Wall -Wextra -Werror -g -gstabs -pipe
+DEFAULT_FLAGS := -m32 -Wall -Wextra -Werror -g -gstabs -pipe -O2
 DEFAULT_CFLAGS := $(DEFAULT_FLAGS) -std=c99
 DEFAULT_CPPFLAGS := $(DEFAULT_FLAGS)
 DEFAULT_ASFLAGS := $(DEFAULT_FLAGS)
 DEFAULT_LDFLAGS := -melf_i386
 DEFAULT_ARFLAGS := rcs
+
+# Link Time Optimization
+DEFAULT_FLAGS += -flto -flto-compression-level=9 -fuse-linker-plugin
+DEFAULT_LDFLAGS += -flto
 
 # Kernel build flags
 KERNEL_INCLUDES := kernel/ kernel/CUtils/

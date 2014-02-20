@@ -176,11 +176,11 @@ void RawLinkedList<T>::removeAt(unsigned i)
         assert(pos == i-1);
         d = n->next;
         n->next = d->next;
-    }
 
-    /* Handle the last element case */
-    if (mLast == d) {
-        mLast = n;
+        /* Handle the last element case */
+        if (mLast == d) {
+           mLast = n;
+        }
     }
 
     /* Handle when the list is empty */
