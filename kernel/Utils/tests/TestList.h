@@ -12,8 +12,8 @@ class TestList : public CxxTest::TestSuite
 private:
     struct Element {
         Element(void) : mIndex(0) {};
-        Element(int i) : mIndex(i) {};
-        int mIndex;
+        Element(unsigned i) : mIndex(i) {};
+        unsigned mIndex;
     };
     InstrumentedLinkedList<Element> *mList;
     void initElementTable(Element *e, unsigned count);

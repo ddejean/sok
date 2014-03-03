@@ -5,7 +5,7 @@ void TestList::setUp(void)
 {
     mList = new InstrumentedLinkedList<Element>();
     TS_ASSERT_EQUALS(true, mList->isEmpty());
-    TS_ASSERT_EQUALS(0, mList->count());
+    TS_ASSERT_EQUALS(0u, mList->count());
 }
 
 void TestList::tearDown(void)
@@ -20,12 +20,12 @@ void TestList::testCount(void)
     Element e2(2);
 
     mList->append(e1);
-    TS_ASSERT_EQUALS(1, mList->count());
+    TS_ASSERT_EQUALS(1u, mList->count());
     mList->append(e2);
-    TS_ASSERT_EQUALS(2, mList->count());
+    TS_ASSERT_EQUALS(2u, mList->count());
 
     mList->clear();
-    TS_ASSERT_EQUALS(0, mList->count());
+    TS_ASSERT_EQUALS(0u, mList->count());
 }
 
 void TestList::testIsEmpty(void)
@@ -50,10 +50,10 @@ void TestList::testClear(void)
     mList->append(e2);
     mList->append(e3);
     mList->append(e4);
-    TS_ASSERT_EQUALS(4, mList->count());
+    TS_ASSERT_EQUALS(4u, mList->count());
 
     mList->clear();
-    TS_ASSERT_EQUALS(0, mList->count());
+    TS_ASSERT_EQUALS(0u, mList->count());
     TS_ASSERT_EQUALS(true, mList->isEmpty());
 }
 
@@ -67,7 +67,7 @@ inline void TestList::initElementTable(Element *e, unsigned count)
 void TestList::testAppend(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    100
+#define ELEM_NUM    100u
 
     Element e[ELEM_NUM];
     initElementTable(e, ELEM_NUM);
@@ -94,7 +94,7 @@ void TestList::testAppend(void)
 void TestList::testPrepend(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    100
+#define ELEM_NUM    100u
 
     Element e[ELEM_NUM];
     initElementTable(e, ELEM_NUM);
@@ -127,7 +127,7 @@ void TestList::testInsertWithAnEmptyList(void)
 
     /* Insertion at the beginning */
     mList->insert(e, 0);
-    TS_ASSERT_EQUALS(1, mList->count());
+    TS_ASSERT_EQUALS(1u, mList->count());
     c = mList->at(0);
     TS_ASSERT_EQUALS(e.mIndex, c.mIndex);
 
@@ -136,7 +136,7 @@ void TestList::testInsertWithAnEmptyList(void)
 
     /* Insertion at the end */
     mList->insert(e, mList->count() + 1);
-    TS_ASSERT_EQUALS(1, mList->count());
+    TS_ASSERT_EQUALS(1u, mList->count());
     c = mList->at(0);
     TS_ASSERT_EQUALS(e.mIndex, c.mIndex);
     TS_ASSERT(mList->isHealthy());
@@ -148,14 +148,14 @@ void TestList::testInsertWithAnEmptyList(void)
 void TestList::testInsertWithAFilledList(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    10
+#define ELEM_NUM    10u
 
     Element e[ELEM_NUM];
     initElementTable(e, ELEM_NUM);
 
     for (unsigned i = 0; i < ELEM_NUM; i++) {
         mList->insert(e[i], mList->count());
-        TS_ASSERT_EQUALS(i + 1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         Element ctrl = mList->at(i);
         TS_ASSERT_EQUALS(i, ctrl.mIndex);
     }
@@ -176,7 +176,7 @@ void TestList::testInsertWithAFilledList(void)
 void TestList::testRemoveAtTheBeginning(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    10
+#define ELEM_NUM    10u
 
     Element e[ELEM_NUM];
     Element ctrl;
@@ -184,7 +184,7 @@ void TestList::testRemoveAtTheBeginning(void)
 
     for (unsigned i = 0; i < ELEM_NUM; i++) {
         mList->insert(e[i], mList->count());
-        TS_ASSERT_EQUALS(i + 1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         ctrl = mList->at(i);
         TS_ASSERT_EQUALS(i, ctrl.mIndex);
     }
@@ -207,7 +207,7 @@ void TestList::testRemoveAtTheBeginning(void)
 void TestList::testRemoveAtTheEnd(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    10
+#define ELEM_NUM    10u
 
     Element e[ELEM_NUM];
     Element ctrl;
@@ -215,7 +215,7 @@ void TestList::testRemoveAtTheEnd(void)
 
     for (unsigned i = 0; i < ELEM_NUM; i++) {
         mList->insert(e[i], mList->count());
-        TS_ASSERT_EQUALS(i + 1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         ctrl = mList->at(i);
         TS_ASSERT_EQUALS(i, ctrl.mIndex);
     }
@@ -223,9 +223,9 @@ void TestList::testRemoveAtTheEnd(void)
     TS_ASSERT_EQUALS(ELEM_NUM, mList->count());
 
     for (int i = ELEM_NUM - 1; i >= 0; i--) {
-        TS_ASSERT_EQUALS(i+1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         ctrl = mList->at(i);
-        TS_ASSERT_EQUALS(i, ctrl.mIndex);
+        TS_ASSERT_EQUALS(i, (int)ctrl.mIndex);
         mList->removeAt(i);
         TS_ASSERT(mList->isHealthy());
     }
@@ -238,7 +238,7 @@ void TestList::testRemoveAtTheEnd(void)
 void TestList::testRemoveAtTheMiddle(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    10
+#define ELEM_NUM    10u
 
     Element e[ELEM_NUM];
     Element ctrl, cur;
@@ -246,7 +246,7 @@ void TestList::testRemoveAtTheMiddle(void)
 
     for (unsigned i = 0; i < ELEM_NUM; i++) {
         mList->insert(e[i], mList->count());
-        TS_ASSERT_EQUALS(i + 1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         ctrl = mList->at(i);
         TS_ASSERT_EQUALS(i, ctrl.mIndex);
     }
@@ -256,7 +256,7 @@ void TestList::testRemoveAtTheMiddle(void)
     /* Remove an element in the middle */
     ctrl = mList->at(ELEM_NUM / 2);
     mList->removeAt(ELEM_NUM / 2);
-    TS_ASSERT_EQUALS(ELEM_NUM - 1, mList->count());
+    TS_ASSERT_EQUALS(ELEM_NUM - 1u, mList->count());
     TS_ASSERT(mList->isHealthy());
 
     /* Ensure the element is not in anymore */
@@ -271,7 +271,7 @@ void TestList::testRemoveAtTheMiddle(void)
 void TestList::testAt(void)
 {
 /* Local element number definition */
-#define ELEM_NUM    10
+#define ELEM_NUM    10u
 
     Element e[ELEM_NUM];
     Element ctrl;
@@ -279,7 +279,7 @@ void TestList::testAt(void)
 
     for (unsigned i = 0; i < ELEM_NUM; i++) {
         mList->insert(e[i], mList->count());
-        TS_ASSERT_EQUALS(i + 1, mList->count());
+        TS_ASSERT_EQUALS(i + 1u, mList->count());
         Element ctrl = mList->at(i);
         TS_ASSERT_EQUALS(i, ctrl.mIndex);
     }
