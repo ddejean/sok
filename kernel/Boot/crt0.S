@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013, the Simple Object Kernel project.
+ * Copyright (C) 2012-2014, the Simple Object Kernel project.
  *
  * crt0.S Assembly bootstrap for x86 targets
  * by Damien Dejean <dam.dejean@gmail.com>
@@ -9,8 +9,8 @@
  *
  * Requirements:
  * - Set up a primary stack
- * - The kernel must block in a fashion and power efficient way if the call
- *   to stage1_main returns.
+ * - Setup an identity segmentation
+ * - Prevent stage1_main buggy returns.
  */
 
 .text
@@ -45,7 +45,7 @@ entry:
     movl    %eax,           multiboot_magic
     movl    %ebx,           multiboot_info
 
-    /* Load the tricky GDT */
+    /* Load a simple GDT */
     lgdtl   gdt_desc
     movw    $0x10,      %ax
     movw    %ax,        %ds
@@ -53,13 +53,13 @@ entry:
     movw    %ax,        %fs
     movw    %ax,        %gs
     movw    %ax,        %ss
-    jmp     $0x8,       $virtual_kernel
+    jmp     $0x8,       $kernel_with_segments
 
 /*
- * Virtual kernel entry point.
+ * Kernel entry point after identity segmentation.
  * Let the debugger align on new addresses translation
  */
-virtual_kernel:
+kernel_with_segments:
     /* Setup the stack */
     leal        bootstrap_stack,    %esp
     addl        $16384,             %esp
@@ -81,8 +81,8 @@ virtual_kernel:
 
 /*
  * Global Descriptor Table to let the CPU use addresses with the kernel_offset
- * offset. This tricky GDT avoid to translate manually all addresses until a
- * page table is installed.
+ * offset.
+ * This is a simple bootstrap GDT to define basic segments for kernel boot.
  */
     .align  4
 gdt_desc:

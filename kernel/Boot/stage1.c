@@ -141,7 +141,7 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
         kernel_main(context, argc, argv);
 
         /* We should never come here. */
-        printf("Bug: kernel_main should never return!");
-        while (1);
+        printf("BUG: kernel_main should never return!");
+        /* Will be blocked by cli/hlt in crt0 ... */
 }
 
