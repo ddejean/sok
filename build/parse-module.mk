@@ -91,6 +91,11 @@ PRIVATE_TESTS_OBJS := $(addprefix $(OUT_DIR)/,\
     $(PRIVATE_TESTS_ASM_FILES:.S=.o) \
 )
 
+# Tests won't generate if there's no header files ...
+ifeq (,$(PRIVATE_TESTS_H_FILES))
+$(error $(PRIVATE_MODULE): missing test header files in LOCAL_TESTS_FILES)
+endif
+
 else
 
 PRIVATE_TESTS_TARGET:=
