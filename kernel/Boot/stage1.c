@@ -8,8 +8,6 @@
  * Requirements:
  * - Parse kernel command line arguments if they exist. If not, give empty
  *   structures to the kernel_main.
- * - Call C++ constructors before kernel_main call, and C++ destructors
- *   after kernel_main returns.
  * - Configure the primary display library using putbytes callback, even
  *   if it consists in a NULL pointer (no display). A valid display is
  *   adviced for debug.
@@ -93,18 +91,6 @@ char **stage1_argumentize(const char *mb_args, int *argc)
 }
 
 /**
- * Function to call a list of functions (CTORS/DTORS).
- */
-static void stage1_call_tors(void (*tors_begin)(void), void (*tors_end)(void))
-{
-        void (*tor)(void);
-
-        for (tor = tors_begin; tor < tors_end; tor++) {
-                tor();
-        }
-}
-
-/**
  * Entry point of kernel first stage.
  */
 void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
@@ -151,13 +137,11 @@ void stage1_main(uint32_t multiboot_magic, multiboot_info_t *multiboot_info)
         /* Build stage1 info structure */
         context = boot_info_fill();
 
-        /* Call constructors list */
-        stage1_call_tors(_ctors_start, _ctors_end);
-
         /* Call C++ kernel */
         kernel_main(context, argc, argv);
 
-        /* Call destructors */
-        stage1_call_tors(_dtors_start, _dtors_end);
+        /* We should never come here. */
+        printf("Bug: kernel_main should never return!");
+        while (1);
 }
 

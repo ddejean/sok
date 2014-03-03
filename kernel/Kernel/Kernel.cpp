@@ -14,23 +14,21 @@ extern "C" {
 #include "stdio.h"
 #include "assert.h"
 #include "Kernel.h"
-#include "System.h"
+#include "Runtime/runtime.h"
+#include "Memory/BootstrapAllocator.h"
 
 
 void kernel_main(struct boot_context *context, int argc, char **argv)
 {
-        System *system = NULL;
         (void)argc;
         (void)argv;
 
         printf("%s\n", "Running stage 2 ...");
+        assert(context != NULL);
 
-        system = System::getInstance();
-        assert(system != NULL);
-        system->injectBootContext(context);
-
-        /* Bootstrap:  */
-        system->bootstrapSystem();
+        /* Prepare runtime environment */
+        runtime_init();
+        runtime_inject_allocator(BootstrapAllocator::getInstance());
 }
 
 

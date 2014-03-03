@@ -2,7 +2,7 @@
  * allocation.cpp
  *
  * Copyright (C) 2012 Simple Object Kernel project
- * by Damien Dejean <djod4556@yahoo.fr>
+ * by Damien Dejean <dam.dejean@gmail.com>
  *
  * Defines default allocation operators for classes that does not override them.
  * Manage
@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 #include "assert.h"
-#include "Kernel/System.h"
+#include "allocation.h"
 #include "Memory/Allocator.h"
 
 /**
@@ -35,7 +35,6 @@ struct allocation_link {
  */
 static void *allocation_new(size_t size)
 {
-    System *system;
     Allocator *allocator;
     struct allocation_link *link;
     char *p;
@@ -45,8 +44,7 @@ static void *allocation_new(size_t size)
     }
 
     /* Get the memory chunk */
-    system = System::getInstance();
-    allocator = system->getAllocator();
+    allocator = runtime_get_allocator();
     link = (struct allocation_link*) allocator->alloc(size + sizeof(struct allocation_link));
 
     if (link != NULL) {
