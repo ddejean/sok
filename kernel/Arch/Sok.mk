@@ -11,8 +11,12 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := Arch
 LOCAL_MODULE_CLASS := KERNEL
-LOCAL_SRC_FILES := $(call all-c-files-under,.) \
-    $(call all-asm-files-under,.)
+LOCAL_SRC_FILES := $(call c-files-under,.) \
+    $(call asm-files-under,.) \
+    $(call cpp-files-under,.)
+
+LOCAL_TESTS_FILES := $(call cpp-files-under,tests) \
+    $(call c-files-under,tests) \
+    $(call h-files-under,tests)
 
 include $(BUILD_STATIC_LIBRARY)
-
