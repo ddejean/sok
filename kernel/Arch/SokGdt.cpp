@@ -66,5 +66,59 @@ SokGdt* SokGdt::withTssDescriptor(SegmentDescriptor *desc)
 
 SokGdt* SokGdt::theKernelGdt(void)
 {
-    return new SokGdt();
+    SegmentDescriptor *kernelCS;
+    SegmentDescriptor *kernelDS;
+    SegmentDescriptor *userCS;
+    SegmentDescriptor *userDS;
+    SokGdt *sGdt;
+
+    sGdt = new SokGdt();
+    kernelCS = SegmentDescriptor::aCodeSegmentDescriptor()
+        ->for32bitProtectedMode()
+        ->withPageGranularity()
+        ->withReadPermission()
+        ->withBaseAddress(0u)
+        ->withLimit(0xFFFFFu)
+        ->withKernelCredential()
+        ->markedAsPresent();
+
+    kernelDS = SegmentDescriptor::aDataSegmentDescriptor()
+        ->for32bitProtectedMode()
+        ->withPageGranularity()
+        ->withWritePermission()
+        ->withBaseAddress(0u)
+        ->withLimit(0xFFFFFu)
+        ->withKernelCredential()
+        ->markedAsPresent();
+
+    userCS = SegmentDescriptor::aCodeSegmentDescriptor()
+        ->for32bitProtectedMode()
+        ->withPageGranularity()
+        ->withReadPermission()
+        ->withBaseAddress(0u)
+        ->withLimit(0xFFFFFu)
+        ->withUserCredential()
+        ->markedAsPresent();
+
+    userDS = SegmentDescriptor::aDataSegmentDescriptor()
+        ->for32bitProtectedMode()
+        ->withPageGranularity()
+        ->withWritePermission()
+        ->withBaseAddress(0u)
+        ->withLimit(0xFFFFFu)
+        ->withUserCredential()
+        ->markedAsPresent();
+
+    sGdt->insert(0, SegmentDescriptor::aNullSegmentDescriptor());
+    sGdt->insert(KERNEL_CS, kernelCS);
+    sGdt->insert(KERNEL_DS, kernelDS);
+    sGdt->insert(USER_CS, userCS);
+    sGdt->insert(USER_DS, userDS);
+
+    delete kernelCS;
+    delete kernelDS;
+    delete userCS;
+    delete userDS;
+
+    return sGdt;
 }
